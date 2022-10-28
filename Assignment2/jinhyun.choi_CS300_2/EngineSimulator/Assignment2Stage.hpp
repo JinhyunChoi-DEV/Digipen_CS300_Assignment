@@ -39,7 +39,7 @@ private:
 	void CreateCamera();
 	void CreateLightObject();
 	void CreateObject();
-	void CreateSpheres();
+	void CreateLightBall();
 	void ModelsGUI();
 	void NormalDrawGUI();
 	void ReloadShaderGUI();

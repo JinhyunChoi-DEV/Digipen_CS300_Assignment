@@ -24,5 +24,5 @@ void main()
 	outputNormal = mat3(transpose(inverse(transform.model))) * normal;
 	objectPos = vec3(transform.model * vec4(position, 1.0));
 
-	gl_Position = transform.projection * transform.view * transform.model * vec4(position, 1.0);
+	gl_Position = getPosition(position);
 }

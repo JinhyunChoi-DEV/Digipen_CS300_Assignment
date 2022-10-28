@@ -259,5 +259,8 @@
     <None Include="ShaderFiles\TransformModel.glsl">
       <Filter>Engine\Graphics\GLSL</Filter>
     </None>
+    <None Include="ShaderFiles\Light.glsl">
+      <Filter>Engine\Graphics\GLSL</Filter>
+    </None>
   </ItemGroup>
 </Project>

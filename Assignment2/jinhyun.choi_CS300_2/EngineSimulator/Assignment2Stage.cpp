@@ -39,9 +39,9 @@ Assignment2Stage::Assignment2Stage()
 	pi = glm::pi<float>();
 
 	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
-	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "LightingFunctions.glsl", "TransformModel.glsl", nullptr);
-	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "LightingFunctions.glsl", "TransformModel.glsl", nullptr);
-	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "LightingFunctions.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "LightingFunctions.glsl", "TransformModel.glsl", "Light.glsl", nullptr);
+	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "LightingFunctions.glsl", "TransformModel.glsl", "Light.glsl", nullptr);
+	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "LightingFunctions.glsl", "TransformModel.glsl", "Light.glsl", nullptr);
 	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", "TransformModel.glsl", nullptr);
 
 	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongLighting" , "BlinnShading", "PhongShading" });
@@ -51,7 +51,7 @@ void Assignment2Stage::Initialize()
 {
 	CreateCamera();
 	CreateLightObject();
-	CreateSpheres();
+	CreateLightBall();
 	LoadAllObjects();
 	CreateObject();
 	selectedShader = reloadingShaderNames[0];
@@ -175,12 +175,13 @@ void Assignment2Stage::CreateObject()
 	floorObject->GetComponent<Transform>()->SetRotation(-90, X);
 }
 
-void Assignment2Stage::CreateSpheres()
+void Assignment2Stage::CreateLightBall()
 {
 	int objectCount = 1;
 	glm::vec3 scale = orbitScale;
 	auto sphereMesh = SphereMesh(sphereMeshName, 1.0f, 25, 25);
 	auto meshSphere = sphereMesh.GetMesh();
+	meshSphere->SetDrawType(Light);
 	MESHES->Add(meshSphere->GetName(), meshSphere);
 
 	constexpr float pi = glm::pi<float>();

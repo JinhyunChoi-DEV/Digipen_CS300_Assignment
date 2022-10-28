@@ -81,6 +81,11 @@ void Mesh::SetColor(glm::vec3 color)
 	objectColor = color;
 }
 
+void Mesh::SetDrawType(DrawType type)
+{
+	this->type = type;
+}
+
 void Mesh::CreateVertexNormalLines()
 {
 	for (unsigned i = 0; i < positions.size(); ++i)

@@ -80,6 +80,7 @@
   <ItemGroup>
     <None Include="ShaderFiles\BlinnShading.frag" />
     <None Include="ShaderFiles\BlinnShading.vert" />
+    <None Include="ShaderFiles\Light.glsl" />
     <None Include="ShaderFiles\Solid.frag" />
     <None Include="ShaderFiles\Solid.vert" />
     <None Include="ShaderFiles\LightingFunctions.glsl" />

@@ -18,5 +18,5 @@ layout(location=1) in vec3 normal;
 
 void main()
 {
-	gl_Position = transform.projection * transform.view * transform.model * vec4(position, 1.0);
+	gl_Position = getPosition(position);
 }

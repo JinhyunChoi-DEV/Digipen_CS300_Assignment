@@ -54,6 +54,7 @@ public:
 	void SetShader(std::string name);
 	void SetMultipleFaceIndex(bool flag);
 	void SetColor(glm::vec3 color);
+	void SetDrawType(DrawType type);
 
 	Shader* GetShader() const { return shader; }
 	DrawType GetType() const { return type; }

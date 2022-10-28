@@ -36,5 +36,5 @@ void main()
 	vec3 result = (ambient + diffuse + specular) * objectColor;
 
 	resultColor = result;
-	gl_Position = transform.projection * transform.view * transform.model * vec4(position, 1.0);
+	gl_Position = getPosition(position);
 }

@@ -132,9 +132,7 @@ void Graphic::Draw()
 			DrawLine(transformData, meshData);
 
 		if (type == Light)
-		{
-			
-		}
+			DrawLight(transformData, meshData);
 	}
 }
 
@@ -161,6 +159,7 @@ void Graphic::DrawObject(const Transform* transform, const Mesh* mesh)
 
 	shader->Use();
 	uboManager->Set(shader, transform, camera);
+	uboManager->Set2(mesh->GetShader(), transform, camera);
 	shader->Set("lightColor", glm::vec3(1, 1, 1));
 	shader->Set("lightPosition", { 0, 5, 3 });
 	shader->Set("objectColor", glm::vec3(0.8, 0.8, 0.8));
@@ -222,7 +221,7 @@ void Graphic::DrawLine(const Transform* transform, const Mesh* mesh)
 	glBindVertexArray(0);
 }
 
-void Graphic::DrawVertexNormal(Transform* transform, const Mesh* mesh)
+void Graphic::DrawVertexNormal(const Transform* transform, const Mesh* mesh)
 {
 	auto VAO = vertexObjectManager->GetVertexNormalVAO(mesh);
 
@@ -243,7 +242,7 @@ void Graphic::DrawVertexNormal(Transform* transform, const Mesh* mesh)
 	glBindVertexArray(0);
 }
 
-void Graphic::DrawFaceNormal(Transform* transform, const Mesh* mesh)
+void Graphic::DrawFaceNormal(const Transform* transform, const Mesh* mesh)
 {
 	auto VAO = vertexObjectManager->GetFaceNormalVAO(mesh);
 
@@ -262,5 +261,10 @@ void Graphic::DrawFaceNormal(Transform* transform, const Mesh* mesh)
 	glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(normalLines.size()));
 
 	glBindVertexArray(0);
+}
+
+void Graphic::DrawLight(const Transform* transform, const Mesh* mesh)
+{
+	DrawSolid(transform, mesh);
 }
 
