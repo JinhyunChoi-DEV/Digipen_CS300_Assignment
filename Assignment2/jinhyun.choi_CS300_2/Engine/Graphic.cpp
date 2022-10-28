@@ -31,6 +31,7 @@ Graphic::Graphic()
 	camera = new Camera();
 	shaderManager = new ShaderManager();
 	vertexObjectManager = new VertexObjectManager();
+	uboManager = new UniformBlockObjectManager();
 	drawVertexNormal = false;
 	drawFaceNormal = false;
 }
@@ -157,14 +158,9 @@ void Graphic::DrawObject(const Transform* transform, const Mesh* mesh)
 
 	auto shader = mesh->GetShader();
 	auto color = mesh->GetColor();
-	auto model = transform->GetMatrix();
-	auto view = camera->GetView();
-	auto projection = camera->GetProjection();
 
 	shader->Use();
-	shader->Set("model", model);
-	shader->Set("view", view);
-	shader->Set("projection", projection);
+	uboManager->Set(shader, transform, camera);
 	shader->Set("lightColor", glm::vec3(1, 1, 1));
 	shader->Set("lightPosition", { 0, 5, 3 });
 	shader->Set("objectColor", glm::vec3(0.8, 0.8, 0.8));
@@ -189,14 +185,9 @@ void Graphic::DrawSolid(const Transform* transform, const Mesh* mesh)
 
 	auto shader = mesh->GetShader();
 	auto color = mesh->GetColor();
-	auto model = transform->GetMatrix();
-	auto view = camera->GetView();
-	auto projection = camera->GetProjection();
 
 	shader->Use();
-	shader->Set("model", model);
-	shader->Set("view", view);
-	shader->Set("projection", projection);
+	uboManager->Set(shader, transform, camera);
 	shader->Set("vertexColor", color);
 
 	glBindVertexArray(VAO);
@@ -218,14 +209,9 @@ void Graphic::DrawLine(const Transform* transform, const Mesh* mesh)
 
 	auto shader = mesh->GetShader();
 	auto color = mesh->GetColor();
-	auto model = transform->GetMatrix();
-	auto view = camera->GetView();
-	auto projection = camera->GetProjection();
 
 	shader->Use();
-	shader->Set("model", model);
-	shader->Set("view", view);
-	shader->Set("projection", projection);
+	uboManager->Set(shader, transform, camera);
 	shader->Set("lineColor", color);
 
 	auto vertices = mesh->GetPositions();
@@ -244,14 +230,9 @@ void Graphic::DrawVertexNormal(Transform* transform, const Mesh* mesh)
 		return;
 
 	auto shader = GetShader("Line");
-	auto model = transform->GetMatrix();
-	auto view = camera->GetView();
-	auto projection = camera->GetProjection();
 
 	shader->Use();
-	shader->Set("model", model);
-	shader->Set("view", view);
-	shader->Set("projection", projection);
+	uboManager->Set(shader, transform, camera);
 	shader->Set("lineColor", glm::vec3(0, 0, 1));
 
 	auto normalLines = mesh->GetVertexNormalLines();
@@ -270,14 +251,9 @@ void Graphic::DrawFaceNormal(Transform* transform, const Mesh* mesh)
 		return;
 
 	auto shader = GetShader("Line");
-	auto model = transform->GetMatrix();
-	auto view = camera->GetView();
-	auto projection = camera->GetProjection();
 
 	shader->Use();
-	shader->Set("model", model);
-	shader->Set("view", view);
-	shader->Set("projection", projection);
+	uboManager->Set(shader, transform, camera);
 	shader->Set("lineColor", glm::vec3(0, 1, 0));
 
 	auto normalLines = mesh->GetFaceNormalLines();

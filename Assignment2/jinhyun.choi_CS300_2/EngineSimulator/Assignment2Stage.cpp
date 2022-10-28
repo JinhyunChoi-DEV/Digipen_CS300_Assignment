@@ -38,11 +38,11 @@ Assignment2Stage::Assignment2Stage()
 	drawFace = false;
 	pi = glm::pi<float>();
 
-	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", nullptr);
-	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "LightingFunctions.glsl", nullptr);
-	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "LightingFunctions.glsl", nullptr);
-	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "LightingFunctions.glsl", nullptr);
-	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", nullptr);
+	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "LightingFunctions.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "LightingFunctions.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "LightingFunctions.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", "TransformModel.glsl", nullptr);
 
 	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongLighting" , "BlinnShading", "PhongShading" });
 }

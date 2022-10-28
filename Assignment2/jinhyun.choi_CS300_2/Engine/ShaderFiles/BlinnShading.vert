@@ -23,14 +23,10 @@ uniform vec3 objectColor;
 uniform vec3 lightColor;
 uniform vec3 cameraPos;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
 void main()
 {
-	vec3 normalVector = mat3(transpose(inverse(model))) * normal;
-	vec3 objectPos = vec3(model * vec4(position, 1.0));
+	vec3 normalVector = mat3(transpose(inverse(transform.model))) * normal;
+	vec3 objectPos = vec3(transform.model * vec4(position, 1.0));
 	float ambientStrenght = 0.5;
 
 	vec3 ambient = getAmbient(ambientStrenght, lightColor);
@@ -40,5 +36,5 @@ void main()
 	vec3 result = (ambient + diffuse + specular) * objectColor;
 
 	resultColor = result;
-	gl_Position = projection * view * model * vec4(position, 1.0);
+	gl_Position = transform.projection * transform.view * transform.model * vec4(position, 1.0);
 }

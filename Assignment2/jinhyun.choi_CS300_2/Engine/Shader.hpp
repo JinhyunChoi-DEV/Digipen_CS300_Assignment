@@ -15,7 +15,6 @@ End Header --------------------------------------------------------*/
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
-
 #include "ShaderManager.hpp"
 
 class Shader

@@ -19,14 +19,10 @@ layout(location=1) in vec3 normal;
 out vec3 objectPos;
 out vec3 outputNormal;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
 void main()
 {
-	outputNormal = mat3(transpose(inverse(model))) * normal;
-	objectPos = vec3(model * vec4(position, 1.0));
+	outputNormal = mat3(transpose(inverse(transform.model))) * normal;
+	objectPos = vec3(transform.model * vec4(position, 1.0));
 
-	gl_Position = projection * view * model * vec4(position, 1.0);
+	gl_Position = transform.projection * transform.view * transform.model * vec4(position, 1.0);
 }

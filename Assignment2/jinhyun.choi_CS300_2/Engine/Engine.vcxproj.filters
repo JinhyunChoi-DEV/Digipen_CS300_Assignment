@@ -141,6 +141,9 @@
     <ClInclude Include="..\external\imgui\imstb_truetype.h">
       <Filter>Engine\GUI\ImGuiCore</Filter>
     </ClInclude>
+    <ClInclude Include="UniformBlockObjectManager.hpp">
+      <Filter>Engine\Graphics\VertexObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -215,6 +218,9 @@
     <ClCompile Include="..\external\imgui\imgui_widgets.cpp">
       <Filter>Engine\GUI\ImGuiCore</Filter>
     </ClCompile>
+    <ClCompile Include="UniformBlockObjectManager.cpp">
+      <Filter>Engine\Graphics\VertexObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ShaderFiles\Solid.frag">
@@ -248,6 +254,9 @@
       <Filter>Engine\Graphics\GLSL</Filter>
     </None>
     <None Include="ShaderFiles\BlinnShading.vert">
+      <Filter>Engine\Graphics\GLSL</Filter>
+    </None>
+    <None Include="ShaderFiles\TransformModel.glsl">
       <Filter>Engine\Graphics\GLSL</Filter>
     </None>
   </ItemGroup>

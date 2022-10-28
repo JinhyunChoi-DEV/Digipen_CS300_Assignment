@@ -14,12 +14,7 @@ End Header --------------------------------------------------------*/
 #include <glad/glad.h>
 #include "VertexObjectManager.hpp"
 #include "MeshManager.hpp"
-
-//TODO: 아마 Uniform Block Buffer 관련 세팅여기서 해야할듯
-//TODO: 추가적으로 Light 관련 Shader는 바로 여기서 할당해주고
-VertexObjectManager::VertexObjectManager()
-{
-}
+#include "Shader.hpp"
 
 unsigned VertexObjectManager::GetObjectVAO(const Mesh* mesh)
 {
@@ -66,7 +61,7 @@ unsigned VertexObjectManager::GetFaceNormalVAO(const Mesh* mesh)
 	return vertexArrays[name];
 }
 
-bool VertexObjectManager::GenerateObject(std::string name, const Mesh* mesh)
+void VertexObjectManager::GenerateObject(std::string name, const Mesh* mesh)
 {
 	auto VAO = vertexArrays[name];
 	auto VBO = vertexBuffers[name];
@@ -108,11 +103,9 @@ bool VertexObjectManager::GenerateObject(std::string name, const Mesh* mesh)
 	vertexArrays[name] = VAO;
 	vertexBuffers[name] = VBO;
 	elementBuffers[name] = EBO;
-
-	return true;
 }
 
-bool VertexObjectManager::GenerateLines(std::string name, const Mesh* mesh)
+void VertexObjectManager::GenerateLines(std::string name, const Mesh* mesh)
 {
 	auto VAO = vertexArrays[name];
 	auto VBO = vertexBuffers[name];
@@ -136,11 +129,9 @@ bool VertexObjectManager::GenerateLines(std::string name, const Mesh* mesh)
 
 	vertexArrays[name] = VAO;
 	vertexBuffers[name] = VBO;
-
-	return true;
 }
 
-bool VertexObjectManager::GenerateNormalLines(std::string name, const Mesh* mesh, bool isVertexNormal)
+void VertexObjectManager::GenerateNormalLines(std::string name, const Mesh* mesh, bool isVertexNormal)
 {
 	auto VAO = vertexArrays[name];
 	auto VBO = vertexBuffers[name];
@@ -170,6 +161,4 @@ bool VertexObjectManager::GenerateNormalLines(std::string name, const Mesh* mesh
 
 	vertexArrays[name] = VAO;
 	vertexBuffers[name] = VBO;
-
-	return true;
 }

@@ -14,19 +14,19 @@ End Header --------------------------------------------------------*/
 #pragma once
 #include <unordered_map>
 #include "Mesh.hpp"
+#include "UniformBlockObjectManager.hpp"
 
 class VertexObjectManager
 {
 public:
-	VertexObjectManager();
 	unsigned int GetObjectVAO(const Mesh* mesh);
 	unsigned int GetVertexNormalVAO(const Mesh* mesh);
 	unsigned int GetFaceNormalVAO(const Mesh* mesh);
 
 private:
-	bool GenerateObject(std::string name, const Mesh* mesh);
-	bool GenerateLines(std::string name, const Mesh* mesh);
-	bool GenerateNormalLines(std::string name, const Mesh* mesh, bool isVertexNormal);
+	void GenerateObject(std::string name, const Mesh* mesh);
+	void GenerateLines(std::string name, const Mesh* mesh);
+	void GenerateNormalLines(std::string name, const Mesh* mesh, bool isVertexNormal);
 
 	std::unordered_map<std::string, unsigned int> vertexArrays;
 	std::unordered_map<std::string, unsigned int> vertexBuffers;

@@ -42,6 +42,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="StageManager.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="UniformBlockObjectManager.cpp" />
     <ClCompile Include="VertexObjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -72,6 +73,7 @@
     <ClInclude Include="StageBase.hpp" />
     <ClInclude Include="StageManager.hpp" />
     <ClInclude Include="Transform.hpp" />
+    <ClInclude Include="UniformBlockObjectManager.hpp" />
     <ClInclude Include="VertexHelper.hpp" />
     <ClInclude Include="VertexObjectManager.hpp" />
   </ItemGroup>
@@ -87,6 +89,7 @@
     <None Include="ShaderFiles\PhongLighting.vert" />
     <None Include="ShaderFiles\PhongShading.frag" />
     <None Include="ShaderFiles\PhongShading.vert" />
+    <None Include="ShaderFiles\TransformModel.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

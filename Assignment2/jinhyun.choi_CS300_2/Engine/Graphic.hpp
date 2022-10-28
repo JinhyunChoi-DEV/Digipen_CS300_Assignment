@@ -49,6 +49,7 @@ private:
 	Camera* camera;
 	ShaderManager* shaderManager;
 	VertexObjectManager* vertexObjectManager;
+	UniformBlockObjectManager* uboManager;
 	bool drawVertexNormal, drawFaceNormal;
 };
 

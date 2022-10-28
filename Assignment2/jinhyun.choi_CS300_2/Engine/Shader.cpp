@@ -159,6 +159,11 @@ namespace
 
 		glShaderSource(shader, totalSize, codes, nullptr);
 
+		for(int i =0; i<totalSize; ++i)
+		{
+			std::cout << codes[i] << std::endl;
+		}
+
 		glCompileShader(shader);
 
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_result);
