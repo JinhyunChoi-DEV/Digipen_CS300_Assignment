@@ -13,10 +13,21 @@ Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 10/24/2022
 End Header --------------------------------------------------------*/
 
-in vec3 resultColor;
+in vec3 objectPos;
+in vec3 outputNormal;
 out vec4 outputColor;
+
+uniform vec3 objectColor;
+uniform vec3 cameraPos;
 
 void main()
 {
+	float ambientStrenght = 0.5;
+
+	vec3 ambient = getAmbient(ambientStrenght);
+	vec3 diffuse = getDiffuse(1.0, outputNormal);
+	vec3 specular = getSpecularBlinn(1.0, 32.0, outputNormal, objectPos, cameraPos);
+	vec3 resultColor = (ambient + diffuse + specular) * objectColor;
+
 	outputColor = vec4(resultColor, 1.0);
 }

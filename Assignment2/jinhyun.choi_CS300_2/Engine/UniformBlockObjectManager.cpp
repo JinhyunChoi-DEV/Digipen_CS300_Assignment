@@ -1,125 +1,102 @@
 #include <glad/glad.h>
-#include <iostream>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "UniformBlockObjectManager.hpp"
+#include "ObjectManager.hpp"
 
-void UniformBlockObjectManager::Set(const Shader* shader, const Transform* model, const Camera* camera)
+class Mesh;
+
+void UniformBlockObjectManager::InitializeTransform()
 {
-	auto data = uniformBuffers.find(UniformBufferType::Transform);
-	if (data == uniformBuffers.end())
-		CreateTransformUniformBlock(shader, model, camera);
-	else
-		BindTransformData(shader, model, camera);
-}
-
-//TODO: Renaming
-void UniformBlockObjectManager::Set2(const Shader* shader, const Transform* model, const Camera* camera)
-{
-	auto data = uniformBuffers.find(UniformBufferType::Light);
-	if (data == uniformBuffers.end())
-		CreateLightUniformBlock(shader, model, camera);
-	else
-		BindLightData(shader, model, camera);
-}
-
-void UniformBlockObjectManager::CreateTransformUniformBlock(const Shader* shader, const Transform* model, const Camera* camera)
-{
-	unsigned int programId = shader->ProgramID;
-
 	UniformBufferData data;
-	data.index = glGetUniformBlockIndex(programId, "Transform");
-	glGetActiveUniformBlockiv(programId, data.index, GL_UNIFORM_BLOCK_DATA_SIZE, &data.size);
+	data.index = transformBlock.Index;
 
 	auto count = transformBlock.Count;
-	auto names = transformBlock.Names;
-	auto indices = transformBlock.Indices;
-	auto offset = transformBlock.Offset;
-
-	glGetUniformIndices(programId, count, names, indices);
-	glGetActiveUniformsiv(programId, count, indices, GL_UNIFORM_OFFSET, offset);
-
-	std::vector<glm::mat4> buffersData = { model->GetMatrix(), camera->GetView(), camera->GetProjection() };
-	data.buffer = (GLubyte*)malloc(data.size);
-
-	for(int i =0; i<count; ++i)
-	{
-		auto matrix = buffersData[i];
-		memcpy(data.buffer + offset[i], &matrix[0], sizeof(glm::mat4));
-	}
 
 	glGenBuffers(1, &data.UBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
-	glBufferData(GL_UNIFORM_BUFFER, data.size, data.buffer, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, data.index, data.UBO);
+	glBufferData(GL_UNIFORM_BUFFER, count * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferRange(GL_UNIFORM_BUFFER, data.index, data.UBO, 0, count * sizeof(glm::mat4));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	uniformBuffers.insert(std::make_pair(UniformBufferType::Transform, data));
 }
 
-void UniformBlockObjectManager::BindTransformData(const Shader* shader, const Transform* model, const Camera* camera)
+void UniformBlockObjectManager::InitializeLight()
 {
-	auto buffers = uniformBuffers.find(UniformBufferType::Transform);
-	if (buffers == uniformBuffers.end())
-	{
-		CreateTransformUniformBlock(shader, model, camera);
-		return;
-	}
-
-	auto count = transformBlock.Count;
-	auto offset = transformBlock.Offset;
-	std::vector<glm::mat4> buffersData = { model->GetMatrix(), camera->GetView(), camera->GetProjection() };
-	auto data = buffers->second;
-
-	for (int i = 0; i < count; ++i)
-	{
-		auto matrix = buffersData[i];
-		memcpy(data.buffer + offset[i], &matrix[0], sizeof(glm::mat4));
-	}
-
-	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
-	glBufferData(GL_UNIFORM_BUFFER, data.size, data.buffer, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, data.index, data.UBO);
-}
-
-void UniformBlockObjectManager::CreateLightUniformBlock(const Shader* shader, const Transform* model,
-	const Camera* camera)
-{
-	unsigned int programId = shader->ProgramID;
-
 	UniformBufferData data;
-	data.index = glGetUniformBlockIndex(programId, "Light");
-	glGetActiveUniformBlockiv(programId, data.index, GL_UNIFORM_BLOCK_DATA_SIZE, &data.size);
+	data.index = lightBlock.Index;
 
-	auto count = lightBlock.Count;
-	auto names = lightBlock.Names;
-	auto indices = lightBlock.Indices;
-	auto offset = lightBlock.Offset;
-
-	glGetUniformIndices(programId, count, names, indices);
-	glGetActiveUniformsiv(programId, count, indices, GL_UNIFORM_OFFSET, offset);
-
-	//TODO 알맞은 데이터로 넣어줘야한다
-	/*std::vector<glm::mat4> buffersData = { model->GetMatrix(), camera->GetView(), camera->GetProjection() };
-	data.buffer = (GLubyte*)malloc(data.size);
-
-	for (int i = 0; i < count; ++i)
-	{
-		auto matrix = buffersData[i];
-		memcpy(data.buffer + offset[i], &matrix[0], sizeof(glm::mat4));
-	}*/
+	auto vec3Count = lightBlock.Vector3Count;
+	auto floatCount = lightBlock.FloatCount;
+	int size = sizeof(glm::vec3) * vec3Count + sizeof(GLfloat) * floatCount;
 
 	glGenBuffers(1, &data.UBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
-	glBufferData(GL_UNIFORM_BUFFER, data.size, NULL, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, data.index, data.UBO);
+	glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferRange(GL_UNIFORM_BUFFER, data.index, data.UBO, 0, size);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	uniformBuffers.insert(std::make_pair(UniformBufferType::Light, data));
 }
 
-void UniformBlockObjectManager::BindLightData(const Shader* shader, const Transform* model, const Camera* camera)
+void UniformBlockObjectManager::BindTransformData(const Transform* model, const Camera* camera)
 {
-	auto buffers = uniformBuffers.find(UniformBufferType::Light);
-	if (buffers == uniformBuffers.end())
-	{
-		CreateLightUniformBlock(shader, model, camera);
-		return;
-	}
+	if (uniformBuffers.find(UniformBufferType::Transform) == uniformBuffers.end())
+		InitializeTransform();
+
+	auto bufferInfo = uniformBuffers.find(UniformBufferType::Transform);
+	auto data = bufferInfo->second;
+
+	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
+
+	GLint offset = 0;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::mat4), glm::value_ptr(model->GetMatrix()));
+	offset += sizeof(glm::mat4);
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::mat4), glm::value_ptr(camera->GetView()));
+	offset += sizeof(glm::mat4);
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::mat4), glm::value_ptr(camera->GetProjection()));
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+
+void UniformBlockObjectManager::BindLightData(const Transform* model, const Light* light)
+{
+	if (uniformBuffers.find(UniformBufferType::Light) == uniformBuffers.end())
+		InitializeLight();
+
+	auto bufferInfo = uniformBuffers.find(UniformBufferType::Light);
+	auto data = bufferInfo->second;
+	float cutOff = light->GetCutOffAngle();
+	float outerCutOff = light->GetOuterCutOffAngle();
+	float constant = light->GetConstant();
+	float linear = light->GetLinear();
+	float quadratic = light->GetQuadratic();
+
+	int baseSize = 16;
+	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
+
+	GLint offset = 0;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(model->GetPosition()));
+	offset += baseSize;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetDirection()));
+	offset += baseSize;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &cutOff);
+	offset += baseSize;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &outerCutOff);
+	offset += baseSize;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetAmientIntensity()));
+	offset += baseSize;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetDiffuseIntensity()));
+	offset += baseSize;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetSpecularIntensity()));
+	offset += baseSize;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &constant);
+	offset += baseSize;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &linear);
+	offset += baseSize;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &quadratic);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

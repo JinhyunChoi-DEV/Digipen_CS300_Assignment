@@ -25,6 +25,7 @@ End Header --------------------------------------------------------*/
 #include "SphereMesh.hpp"
 #include "Transform.hpp"
 #include "Graphic.hpp"
+#include "Light.hpp"
 #include "Shader.hpp"
 
 Assignment2Stage::Assignment2Stage()
@@ -39,9 +40,9 @@ Assignment2Stage::Assignment2Stage()
 	pi = glm::pi<float>();
 
 	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
-	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "LightingFunctions.glsl", "TransformModel.glsl", "Light.glsl", nullptr);
-	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "LightingFunctions.glsl", "TransformModel.glsl", "Light.glsl", nullptr);
-	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "LightingFunctions.glsl", "TransformModel.glsl", "Light.glsl", nullptr);
+	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "Light.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "Light.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", "TransformModel.glsl", nullptr);
 
 	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongLighting" , "BlinnShading", "PhongShading" });
@@ -64,7 +65,7 @@ void Assignment2Stage::Update()
 	OBJECTMANAGER->GetObject("MainObject")->GetComponent<Transform>()->SetRotation(time *10, Y);
 
 	UpdateCamera(dt);
-	UpdateSpheres(time);
+	//UpdateSpheres(time);
 	UpdateGUI();
 
 	lastUpdateTime = time;
@@ -138,7 +139,6 @@ void Assignment2Stage::CreateCamera()
 	camera->SetOriginData(data);
 }
 
-
 void Assignment2Stage::CreateLightObject()
 {
 	auto orbitMesh = OrbitSphere(orbitLineName, orbitRadius, 50);
@@ -168,6 +168,7 @@ void Assignment2Stage::CreateObject()
 	auto floor = new Object;
 	floor->AddComponent(new Mesh(MESHES->GetMesh("quad")));
 	floor->AddComponent(new Transform);
+	floor->GetComponent<Mesh>()->SetColor(glm::vec3(0.5, 0.5, 0));
 	OBJECTMANAGER->Add("FloorObject", floor);
 	floorObject = floor;
 	floorObject->GetComponent<Transform>()->SetTranslate(glm::vec3(0, -1, 0));
@@ -181,7 +182,7 @@ void Assignment2Stage::CreateLightBall()
 	glm::vec3 scale = orbitScale;
 	auto sphereMesh = SphereMesh(sphereMeshName, 1.0f, 25, 25);
 	auto meshSphere = sphereMesh.GetMesh();
-	meshSphere->SetDrawType(Light);
+	meshSphere->SetDrawType(DrawType::Light);
 	MESHES->Add(meshSphere->GetName(), meshSphere);
 
 	constexpr float pi = glm::pi<float>();
@@ -196,6 +197,12 @@ void Assignment2Stage::CreateLightBall()
 
 		Object* object = new Object();
 		object->AddComponent(meshSphere);
+		object->AddComponent(new Light());
+
+		auto light = object->GetComponent<Light>();
+		light->SetType(LightType::Directional);
+		light->SetDirection(glm::vec3(0.0f, -1.0f, 0.0f));
+
 		object->AddComponent(new Transform());
 		object->GetComponent<Transform>()->SetTranslate({ x*scale.x, y*scale.y, z* scale.z});
 		object->GetComponent<Transform>()->SetScale(glm::vec3{ 0.2, 0.2, 0.2 });

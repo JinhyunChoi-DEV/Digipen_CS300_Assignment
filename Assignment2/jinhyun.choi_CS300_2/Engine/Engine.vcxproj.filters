@@ -52,6 +52,9 @@
     <Filter Include="Engine\GUI\ImGuiCore">
       <UniqueIdentifier>{25db200a-3b6b-4b9c-b511-e06f15505617}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Light">
+      <UniqueIdentifier>{fdd123d6-5b5b-4865-9683-43cf7381b27d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.hpp">
@@ -144,6 +147,9 @@
     <ClInclude Include="UniformBlockObjectManager.hpp">
       <Filter>Engine\Graphics\VertexObject</Filter>
     </ClInclude>
+    <ClInclude Include="Light.hpp">
+      <Filter>Engine\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -221,6 +227,9 @@
     <ClCompile Include="UniformBlockObjectManager.cpp">
       <Filter>Engine\Graphics\VertexObject</Filter>
     </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Engine\Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ShaderFiles\Solid.frag">
@@ -247,19 +256,16 @@
     <None Include="ShaderFiles\PhongShading.vert">
       <Filter>Engine\Graphics\GLSL</Filter>
     </None>
-    <None Include="ShaderFiles\LightingFunctions.glsl">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
     <None Include="ShaderFiles\BlinnShading.frag">
       <Filter>Engine\Graphics\GLSL</Filter>
     </None>
     <None Include="ShaderFiles\BlinnShading.vert">
       <Filter>Engine\Graphics\GLSL</Filter>
     </None>
-    <None Include="ShaderFiles\TransformModel.glsl">
+    <None Include="ShaderFiles\Light.glsl">
       <Filter>Engine\Graphics\GLSL</Filter>
     </None>
-    <None Include="ShaderFiles\Light.glsl">
+    <None Include="ShaderFiles\TransformModel.glsl">
       <Filter>Engine\Graphics\GLSL</Filter>
     </None>
   </ItemGroup>

@@ -50,5 +50,5 @@ OrbitSphere::OrbitSphere(std::string name, float radius, int sector)
 	positions = TranslateToOrigin(sumAllVertex, positions, min, max);
 	positions = ScaleToRange(min, max, positions);
 
-	mesh = new Mesh(name, positions, Line);
+	mesh = new Mesh(name, positions, DrawType::Line);
 }

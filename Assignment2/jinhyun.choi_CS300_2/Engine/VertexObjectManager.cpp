@@ -27,7 +27,7 @@ unsigned VertexObjectManager::GetObjectVAO(const Mesh* mesh)
 
 	auto type = mesh->GetType();
 
-	if (type == Line)
+	if (type == DrawType::Line)
 		GenerateLines(name, mesh);
 	else
 		GenerateObject(name, mesh);

@@ -19,7 +19,7 @@ End Header --------------------------------------------------------*/
 
 namespace
 {
-	GLuint CompileShader(std::string versionCode, std::string shaderBaseCode, std::vector<std::string> commonCode, GLenum shaderType);
+	GLuint CompileShader(std::string name, std::string versionCode, std::string shaderBaseCode, std::vector<std::string> commonCode, GLenum shaderType);
 	GLuint LinkShader(GLuint vertex_handle, GLuint fragment_handle);
 	char* StringCastToChar(std::string text);
 }
@@ -44,8 +44,8 @@ Shader::Shader(std::string name, std::vector<std::pair<ShaderType, std::string>>
 			commonCode.push_back(shaderInfo.second);
 	}
 
-	unsigned vertex = CompileShader(versionText, vertexCode, commonCode, GL_VERTEX_SHADER);
-	unsigned fragment = CompileShader(versionText, fragmentCode, commonCode, GL_FRAGMENT_SHADER);
+	unsigned vertex = CompileShader(name, versionText, vertexCode, commonCode, GL_VERTEX_SHADER);
+	unsigned fragment = CompileShader(name, versionText, fragmentCode, commonCode, GL_FRAGMENT_SHADER);
 
 	ProgramID = LinkShader(vertex, fragment);
 	Name = name;
@@ -139,7 +139,7 @@ void Shader::Set(const std::string& name, glm::mat4 value) const
 
 namespace
 {
-	GLuint CompileShader(std::string versionCode, std::string shaderBaseCode, std::vector<std::string> commonCode, GLenum shaderType)
+	GLuint CompileShader(std::string name, std::string versionCode, std::string shaderBaseCode, std::vector<std::string> commonCode, GLenum shaderType)
 	{
 		GLuint shader = 0;
 		GLint compile_result = GL_FALSE;
@@ -159,24 +159,19 @@ namespace
 
 		glShaderSource(shader, totalSize, codes, nullptr);
 
-		for(int i =0; i<totalSize; ++i)
-		{
-			std::cout << codes[i] << std::endl;
-		}
-
 		glCompileShader(shader);
 
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_result);
 
 		if (compile_result == GL_FALSE)
 		{
-			std::string error_log = "Failed to compile";
+			std::string error_log = "Failed to compile: " + name;
 			if (shaderType == GL_FRAGMENT_SHADER)
 				error_log += " fragment shader:\n";
 			else if (shaderType == GL_VERTEX_SHADER)
 				error_log += " vertex shader:\n";
 			GLint log_length = 0;
-			glGetShaderiv(shader, GL_COMPILE_STATUS, &log_length);
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
 
 			GLchar* log_message = new GLchar[log_length];
 			glGetShaderInfoLog(shader, log_length, nullptr, log_message);

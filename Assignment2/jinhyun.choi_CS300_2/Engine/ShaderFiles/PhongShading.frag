@@ -17,19 +17,17 @@ in vec3 objectPos;
 in vec3 outputNormal;
 out vec4 outputColor;
 
-uniform vec3 lightPosition;
 uniform vec3 objectColor;
-uniform vec3 lightColor;
 uniform vec3 cameraPos;
 
 void main()
 {
 	float ambientStrenght = 0.5;
 
-	vec3 amient = getAmbient(ambientStrenght, lightColor);
-	vec3 diffuse = getDiffuse(1.0, lightColor, outputNormal, lightPosition, objectPos);
-	vec3 specular = getSpecular(1.0, 32.0, lightColor, outputNormal, lightPosition, objectPos, cameraPos);
-	vec3 resultColor = (amient + diffuse + specular) * objectColor;
+	vec3 ambient = getAmbient(ambientStrenght);
+	vec3 diffuse = getDiffuse(1.0, outputNormal);
+	vec3 specular = getSpecular(1.0, 32.0, outputNormal, objectPos, cameraPos);
+	vec3 resultColor = (ambient + diffuse + specular) * objectColor;
 
 	outputColor = vec4(resultColor, 1.0);
 }

@@ -33,6 +33,7 @@
     <ClCompile Include="Graphic.cpp" />
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="MeshManager.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
@@ -63,6 +64,7 @@
     <ClInclude Include="Graphic.hpp" />
     <ClInclude Include="GUIManager.hpp" />
     <ClInclude Include="Input.hpp" />
+    <ClInclude Include="Light.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="MeshManager.hpp" />
     <ClInclude Include="Object.hpp" />
@@ -83,7 +85,6 @@
     <None Include="ShaderFiles\Light.glsl" />
     <None Include="ShaderFiles\Solid.frag" />
     <None Include="ShaderFiles\Solid.vert" />
-    <None Include="ShaderFiles\LightingFunctions.glsl" />
     <None Include="ShaderFiles\Line.frag" />
     <None Include="ShaderFiles\Line.vert" />
     <None Include="ShaderFiles\PhongLighting.frag" />

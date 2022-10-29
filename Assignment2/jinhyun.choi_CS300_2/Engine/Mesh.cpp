@@ -18,7 +18,7 @@ End Header --------------------------------------------------------*/
 
 Mesh::Mesh(std::string name, std::vector<glm::vec3> vertices, std::vector<glm::vec3> vertexNormals,
            std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices, DrawType type)
-		: name(name), positions(vertices), vertexNormals(vertexNormals), faceNormal(faceNormal), indices(indices), objectColor(0.8, 0.8, 0.8), type(type)
+		: name(name), positions(vertices), vertexNormals(vertexNormals), faceNormal(faceNormal), indices(indices), objectColor(glm::vec3(0.8, 0.8, 0.8)), type(type)
 {
 	shader = GRAPHIC->GetShader("PhongLighting");
 
@@ -46,6 +46,7 @@ Mesh::Mesh(const Mesh* mesh)
 	vertexNormalLines = mesh->GetVertexNormalLines();
 	faceNormalLines = mesh->GetFaceNormalLines();
 	indices = mesh->GetIndices();
+	objectColor = mesh->GetColor();
 	type = mesh->GetType();
 }
 

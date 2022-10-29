@@ -34,5 +34,5 @@ public:
 	void Set(const std::string& name, glm::mat4 value) const;
 
 private:
-	std::string versionText = "#version 400 core\n";
+	std::string versionText = "#version 430 core\n";
 };

@@ -17,6 +17,8 @@ End Header --------------------------------------------------------*/
 #include <iostream>
 
 #include "Graphic.hpp"
+
+#include "Light.hpp"
 #include "Mesh.hpp"
 #include "Transform.hpp"
 #include "Object.hpp"
@@ -39,6 +41,9 @@ Graphic::Graphic()
 void Graphic::Initialize()
 {
 	glEnable(GL_DEPTH_TEST);
+
+	uboManager->InitializeTransform();
+	uboManager->InitializeLight();
 }
 
 void Graphic::Update()
@@ -47,15 +52,14 @@ void Graphic::Update()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	camera->Update();
+	UpdateLight();
 	Draw();
 
 	glFinish();
 }
 
 void Graphic::Terminate()
-{
-
-}
+{ }
 
 void Graphic::SetViewSize(glm::vec2 windowSize)
 {
@@ -95,6 +99,29 @@ Shader* Graphic::GetShader(std::string name) const
 	return shaderManager->GetShader(name);
 }
 
+void Graphic::UpdateLight()
+{
+	const auto objects = OBJECTMANAGER->GetObjects();
+	if (objects.empty())
+		return;
+
+	for (auto pair : objects)
+	{
+		auto object = pair.second;
+
+		if (!object->IsActive())
+			continue;
+
+		auto transformData = object->GetComponent<Transform>();
+		auto light = object->GetComponent<Light>();
+
+		if(light == nullptr || transformData == nullptr)
+			continue;
+
+		uboManager->BindLightData(transformData, light);
+	}
+}
+
 void Graphic::Draw()
 {
 	const auto objects = OBJECTMANAGER->GetObjects();
@@ -122,17 +149,17 @@ void Graphic::Draw()
 
 		DrawType type = meshData->GetType();
 
-		if (type == ObjectModel)
+		if (type == DrawType::ObjectModel)
 			DrawModel(transformData, meshData);
 
-		if (type == Solid)
+		if (type == DrawType::Solid)
 			DrawSolid(transformData, meshData);
 
-		if (type == Line)
+		if (type == DrawType::Line)
 			DrawLine(transformData, meshData);
 
-		if (type == Light)
-			DrawLight(transformData, meshData);
+		if (type == DrawType::Light)
+			DrawSolid(transformData, meshData);
 	}
 }
 
@@ -158,12 +185,9 @@ void Graphic::DrawObject(const Transform* transform, const Mesh* mesh)
 	auto color = mesh->GetColor();
 
 	shader->Use();
-	uboManager->Set(shader, transform, camera);
-	uboManager->Set2(mesh->GetShader(), transform, camera);
-	shader->Set("lightColor", glm::vec3(1, 1, 1));
-	shader->Set("lightPosition", { 0, 5, 3 });
-	shader->Set("objectColor", glm::vec3(0.8, 0.8, 0.8));
-	shader->Set("cameraPos", color);
+	uboManager->BindTransformData(transform, camera);
+	shader->Set("objectColor", color);
+	shader->Set("cameraPos", camera->GetPosition());
 
 	glBindVertexArray(VAO);
 
@@ -186,7 +210,7 @@ void Graphic::DrawSolid(const Transform* transform, const Mesh* mesh)
 	auto color = mesh->GetColor();
 
 	shader->Use();
-	uboManager->Set(shader, transform, camera);
+	uboManager->BindTransformData(transform, camera);
 	shader->Set("vertexColor", color);
 
 	glBindVertexArray(VAO);
@@ -210,7 +234,7 @@ void Graphic::DrawLine(const Transform* transform, const Mesh* mesh)
 	auto color = mesh->GetColor();
 
 	shader->Use();
-	uboManager->Set(shader, transform, camera);
+	uboManager->BindTransformData(transform, camera);
 	shader->Set("lineColor", color);
 
 	auto vertices = mesh->GetPositions();
@@ -231,7 +255,7 @@ void Graphic::DrawVertexNormal(const Transform* transform, const Mesh* mesh)
 	auto shader = GetShader("Line");
 
 	shader->Use();
-	uboManager->Set(shader, transform, camera);
+	uboManager->BindTransformData(transform, camera);
 	shader->Set("lineColor", glm::vec3(0, 0, 1));
 
 	auto normalLines = mesh->GetVertexNormalLines();
@@ -252,7 +276,7 @@ void Graphic::DrawFaceNormal(const Transform* transform, const Mesh* mesh)
 	auto shader = GetShader("Line");
 
 	shader->Use();
-	uboManager->Set(shader, transform, camera);
+	uboManager->BindTransformData(transform, camera);
 	shader->Set("lineColor", glm::vec3(0, 1, 0));
 
 	auto normalLines = mesh->GetFaceNormalLines();
@@ -262,9 +286,3 @@ void Graphic::DrawFaceNormal(const Transform* transform, const Mesh* mesh)
 
 	glBindVertexArray(0);
 }
-
-void Graphic::DrawLight(const Transform* transform, const Mesh* mesh)
-{
-	DrawSolid(transform, mesh);
-}
-

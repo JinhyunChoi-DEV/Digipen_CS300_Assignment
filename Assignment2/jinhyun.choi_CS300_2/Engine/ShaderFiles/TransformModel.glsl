@@ -13,11 +13,11 @@ Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
 
-layout (std140) uniform Transform
+layout(std140, binding = 0) uniform Transform
 {
-	uniform mat4 model;
-	uniform mat4 view;
-	uniform mat4 projection;
+	mat4 model;
+	mat4 view;
+	mat4 projection;
 } transform;
 
 vec4 getPosition(vec3 vertex)

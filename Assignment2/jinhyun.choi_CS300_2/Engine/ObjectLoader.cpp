@@ -139,7 +139,7 @@ bool ObjectLoader::Load(const char* fileName, std::string name)
 		vertexNormal[index] = normalize(sumNormals);
 	}
 
-	Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, ObjectModel);
+	Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, DrawType::ObjectModel);
 	mesh->SetMultipleFaceIndex(isMultipleIndex);
 	MESHES->Add(name, mesh);
 
@@ -159,7 +159,7 @@ namespace
 	void CreateObject(std::string name, std::vector<glm::vec3> positions, std::vector<glm::vec3> vertexNormal,
 		std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices)
 	{
-		Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, ObjectModel);
+		Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, DrawType::ObjectModel);
 
 		Object* object = new Object();
 		object->AddComponent(mesh);

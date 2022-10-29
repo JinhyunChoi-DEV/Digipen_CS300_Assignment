@@ -2,6 +2,7 @@
 #include <glfw/glfw3.h>
 
 #include "Camera.hpp"
+#include "Light.hpp"
 #include "Shader.hpp"
 #include "Transform.hpp"
 
@@ -17,6 +18,7 @@ struct UniformTransformBlock
 	const int Count = 3;
 	GLuint Indices[3];
 	GLint Offset[3];
+	GLint Index = 0;
 };
 
 // Light.glsl
@@ -27,9 +29,12 @@ struct UniformLightBlock
 		"Light.ambient", "Light.diffuse", "Light.specular",
 		"Light.constant", "Light.linear", "Light.quadratic"
 	};
-	const int Count = 10;
+	const int Vector3Count = 5;
+	const int FloatCount = 5;
+	int TotalCount = Vector3Count + FloatCount;
 	GLuint Indices[10];
 	GLint Offset[10];
+	GLint Index = 1;
 };
 
 struct UniformBufferData
@@ -43,14 +48,12 @@ struct UniformBufferData
 class UniformBlockObjectManager
 {
 public:
-	void Set(const Shader* shader, const Transform* model, const Camera* camera);
-	void Set2(const Shader* shader, const Transform* model, const Camera* camera);
+	void InitializeTransform();
+	void InitializeLight();
+	void BindTransformData(const Transform* model, const Camera* camera);
+	void BindLightData(const Transform* model, const Light* light);
 
 private:
-	void CreateTransformUniformBlock(const Shader* shader, const Transform* model, const Camera* camera);
-	void BindTransformData(const Shader* shader, const Transform* model, const Camera* camera);
-	void CreateLightUniformBlock(const Shader* shader, const Transform* model, const Camera* camera);
-	void BindLightData(const Shader* shader, const Transform* model, const Camera* camera);
 	std::unordered_map<UniformBufferType, UniformBufferData> uniformBuffers;
 
 	UniformTransformBlock transformBlock;

@@ -19,6 +19,7 @@ End Header --------------------------------------------------------*/
 
 class Mesh;
 class Transform;
+class Object;
 
 class Graphic : public EngineInterface
 {
@@ -38,6 +39,7 @@ public:
 	Camera* GetCamera() const { return camera; }
 
 private:
+	void UpdateLight();
 	void Draw();
 	void DrawModel(Transform* transform, Mesh* mesh);
 	void DrawObject(const Transform* transform, const Mesh* mesh);
@@ -45,7 +47,6 @@ private:
 	void DrawLine(const Transform* transform, const Mesh* mesh);
 	void DrawVertexNormal(const Transform* transform, const Mesh* mesh);
 	void DrawFaceNormal(const Transform* transform, const Mesh* mesh);
-	void DrawLight(const Transform* transform, const Mesh* mesh);
 
 	Camera* camera;
 	ShaderManager* shaderManager;

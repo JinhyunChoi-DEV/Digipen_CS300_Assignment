@@ -18,7 +18,7 @@ End Header --------------------------------------------------------*/
 
 #include "Component.hpp"
 
-enum DrawType
+enum class DrawType
 {
 	Line,
 	Solid,

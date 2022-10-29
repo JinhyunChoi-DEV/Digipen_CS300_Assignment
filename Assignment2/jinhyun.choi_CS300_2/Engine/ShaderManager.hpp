@@ -21,7 +21,6 @@ enum ShaderType
 };
 
 class Shader;
-
 class ShaderManager
 {
 public:
@@ -29,7 +28,9 @@ public:
 
 	void Compile(std::string name, std::vector<const char*> paths);
 	void Use(std::string name);
+
 	Shader* GetShader(std::string name);
+	std::unordered_map<std::string, Shader*> GetShaders() const { return shaders; }
 
 private:
 	std::pair<ShaderType, std::string> GetShaderCodeWithFile(const char* filePath) const;

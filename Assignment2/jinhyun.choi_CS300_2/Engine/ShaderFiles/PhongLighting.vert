@@ -18,9 +18,7 @@ layout(location=1) in vec3 normal;
 
 out vec3 resultColor;
 
-uniform vec3 lightPosition;
 uniform vec3 objectColor;
-uniform vec3 lightColor;
 uniform vec3 cameraPos;
 
 void main()
@@ -29,10 +27,10 @@ void main()
 	vec3 objectPos = vec3(transform.model * vec4(position, 1.0));
 	float ambientStrenght = 0.5;
 
-	vec3 ambient = getAmbient(ambientStrenght, lightColor);
-	vec3 diffuse = getDiffuse(1.0, lightColor, normalVector, lightPosition, objectPos);
-	vec3 specular = getSpecular(1.0, 32.0, lightColor, normalVector, lightPosition, objectPos, cameraPos);
-
+	vec3 ambient = getAmbient(ambientStrenght);
+	vec3 diffuse = getDiffuse(1.0, normalVector);
+	vec3 specular = getSpecular(1.0, 32.0, normalVector, objectPos, cameraPos);
+	//vec3 result = (ambient + specular) * objectColor;
 	vec3 result = (ambient + diffuse + specular) * objectColor;
 
 	resultColor = result;
