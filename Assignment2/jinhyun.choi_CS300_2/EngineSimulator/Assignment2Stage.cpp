@@ -65,7 +65,7 @@ void Assignment2Stage::Update()
 	OBJECTMANAGER->GetObject("MainObject")->GetComponent<Transform>()->SetRotation(time *10, Y);
 
 	UpdateCamera(dt);
-	//UpdateSpheres(time);
+	UpdateSpheres(time);
 	UpdateGUI();
 
 	lastUpdateTime = time;
@@ -200,8 +200,10 @@ void Assignment2Stage::CreateLightBall()
 		object->AddComponent(new Light());
 
 		auto light = object->GetComponent<Light>();
-		light->SetType(LightType::Directional);
+		light->SetType(LightType::Spotlight);
 		light->SetDirection(glm::vec3(0.0f, -1.0f, 0.0f));
+		light->SetCutOff(15.0f);
+		light->SetOuterCutOff(18.0f);
 
 		object->AddComponent(new Transform());
 		object->GetComponent<Transform>()->SetTranslate({ x*scale.x, y*scale.y, z* scale.z});

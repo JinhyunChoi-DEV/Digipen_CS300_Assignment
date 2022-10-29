@@ -2,6 +2,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "UniformBlockObjectManager.hpp"
+
+#include "Graphic.hpp"
 #include "ObjectManager.hpp"
 
 class Mesh;
@@ -9,14 +11,13 @@ class Mesh;
 void UniformBlockObjectManager::InitializeTransform()
 {
 	UniformBufferData data;
-	data.index = transformBlock.Index;
-
-	auto count = transformBlock.Count;
+	data.index = transformIndex;
+	data.size = 3 * sizeof(glm::mat4);
 
 	glGenBuffers(1, &data.UBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
-	glBufferData(GL_UNIFORM_BUFFER, count * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, data.index, data.UBO, 0, count * sizeof(glm::mat4));
+	glBufferData(GL_UNIFORM_BUFFER, data.size, nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferRange(GL_UNIFORM_BUFFER, data.index, data.UBO, 0, data.size);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	uniformBuffers.insert(std::make_pair(UniformBufferType::Transform, data));
@@ -25,16 +26,14 @@ void UniformBlockObjectManager::InitializeTransform()
 void UniformBlockObjectManager::InitializeLight()
 {
 	UniformBufferData data;
-	data.index = lightBlock.Index;
-
-	auto vec3Count = lightBlock.Vector3Count;
-	auto floatCount = lightBlock.FloatCount;
-	int size = sizeof(glm::vec3) * vec3Count + sizeof(GLfloat) * floatCount;
+	data.index = lightIndex;
+	// Light.glsl
+	data.size = 112;
 
 	glGenBuffers(1, &data.UBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
-	glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
-	glBindBufferRange(GL_UNIFORM_BUFFER, data.index, data.UBO, 0, size);
+	glBufferData(GL_UNIFORM_BUFFER, data.size, nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferRange(GL_UNIFORM_BUFFER, data.index, data.UBO, 0, data.size);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	uniformBuffers.insert(std::make_pair(UniformBufferType::Light, data));
@@ -68,34 +67,36 @@ void UniformBlockObjectManager::BindLightData(const Transform* model, const Ligh
 
 	auto bufferInfo = uniformBuffers.find(UniformBufferType::Light);
 	auto data = bufferInfo->second;
+	unsigned int type = static_cast<std::underlying_type<LightType>::type>(light->GetType());
 	float cutOff = light->GetCutOffAngle();
 	float outerCutOff = light->GetOuterCutOffAngle();
 	float constant = light->GetConstant();
 	float linear = light->GetLinear();
 	float quadratic = light->GetQuadratic();
 
-	int baseSize = 16;
 	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
 
 	GLint offset = 0;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(unsigned int), &type);
+	offset += 16;
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(model->GetPosition()));
-	offset += baseSize;
+	offset += 16;
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetDirection()));
-	offset += baseSize;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &cutOff);
-	offset += baseSize;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &outerCutOff);
-	offset += baseSize;
+	offset += 16;
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetAmientIntensity()));
-	offset += baseSize;
+	offset += 16;
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetDiffuseIntensity()));
-	offset += baseSize;
+	offset += 16;
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetSpecularIntensity()));
-	offset += baseSize;
+	offset += 12;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &cutOff);
+	offset += 4;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &outerCutOff);
+	offset += 4;
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &constant);
-	offset += baseSize;
+	offset += 4;
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &linear);
-	offset += baseSize;
+	offset += 4;
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &quadratic);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);

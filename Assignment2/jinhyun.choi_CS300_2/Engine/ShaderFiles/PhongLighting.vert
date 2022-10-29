@@ -28,10 +28,10 @@ void main()
 	float ambientStrenght = 0.5;
 
 	vec3 ambient = getAmbient(ambientStrenght);
-	vec3 diffuse = getDiffuse(1.0, normalVector);
+	vec3 diffuse = getDiffuse(1.0, normalVector, objectPos);
 	vec3 specular = getSpecular(1.0, 32.0, normalVector, objectPos, cameraPos);
-	//vec3 result = (ambient + specular) * objectColor;
-	vec3 result = (ambient + diffuse + specular) * objectColor;
+	vec3 resultLight = getColorResult(ambient, diffuse, specular, objectPos, cameraPos);
+	vec3 result = resultLight * objectColor;
 
 	resultColor = result;
 	gl_Position = getPosition(position);

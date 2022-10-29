@@ -30,11 +30,7 @@ public:
 	void SetColor(glm::vec3 color);	
 
 	glm::vec3 GetDirection() const { return direction; }
-	glm::vec3 GetAmientIntensity() const
-	{
-		int a = 5;
-		return ambient;
-	}
+	glm::vec3 GetAmientIntensity() const { return ambient; }
 	glm::vec3 GetDiffuseIntensity() const { return diffuse; }
 	glm::vec3 GetSpecularIntensity() const { return specular; }
 	LightType GetType() const { return type; }
