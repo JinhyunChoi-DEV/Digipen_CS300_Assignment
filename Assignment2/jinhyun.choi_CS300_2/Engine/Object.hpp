@@ -12,23 +12,29 @@ Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
 
 #pragma once
+#include <string>
 #include <vector>
 #include "Component.hpp"
 
 class Object 
 {
 public:
+	Object(std::string name) : name(name)
+	{}
+
 	void Update();
 	void AddComponent(Component* component);
 	void DeleteComponent(Component* component);
 	void SetActive(bool active);
 
 	bool IsActive() { return isActive; }
+	std::string GetName() { return name; }
 
 	template <typename  COMPONENT>
 	COMPONENT* GetComponent();
 
 private:
+	std::string name;
 	bool isActive = true;
 	std::vector<Component*> components;
 };

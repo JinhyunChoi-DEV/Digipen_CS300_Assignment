@@ -14,6 +14,8 @@ End Header --------------------------------------------------------*/
 #include <iostream>
 
 #include "ObjectManager.hpp"
+
+#include "Light.hpp"
 #include "Object.hpp"
 
 ObjectManager* OBJECTMANAGER;
@@ -56,7 +58,7 @@ void ObjectManager::Add(std::string name)
 		return;
 	}
 
-	objects.insert(std::make_pair(name, new Object()));
+	objects.insert(std::make_pair(name, new Object(name)));
 }
 
 void ObjectManager::Add(std::string name, Object* obj)
@@ -82,6 +84,24 @@ void ObjectManager::Delete(std::string name)
 	delete object;
 
 	objects.erase(name);
+}
+
+std::vector<Object*> ObjectManager::GetLights() const
+{
+	std::vector<Object*> result;
+	for(auto object : objects)
+	{
+		if(!object.second->IsActive())
+			continue;
+
+		auto light = object.second->GetComponent<Light>();
+		if(light == nullptr)
+			continue;
+
+		result.push_back(object.second);
+	}
+
+	return result;
 }
 
 bool ObjectManager::IsExist(std::string name)

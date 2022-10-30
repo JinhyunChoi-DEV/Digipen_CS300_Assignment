@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Graphic.hpp"
+#include "Object.hpp"
 #include "ObjectManager.hpp"
 
 class Mesh;
@@ -63,11 +64,9 @@ void UniformBlockObjectManager::BindTransformData(const Transform* model, const 
 }
 
 
-void UniformBlockObjectManager::BindLightData(std::vector<std::pair<Transform*, Light*>> lights)
+void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects)
 {
-	int activeCount = lights.size();
-	if (activeCount <= 0)
-		return;
+	int activeCount = objects.size();
 
 	if (uniformBuffers.find(UniformBufferType::Light) == uniformBuffers.end())
 		InitializeLight();
@@ -82,12 +81,12 @@ void UniformBlockObjectManager::BindLightData(std::vector<std::pair<Transform*, 
 
 	for(int i = 0; i<activeCount; ++i)
 	{
-		auto model = lights[i].first;
-		auto light = lights[i].second;
+		auto model = objects[i]->GetComponent<Transform>();
+		auto light = objects[i]->GetComponent<Light>();
 
 		unsigned int type = static_cast<std::underlying_type<LightType>::type>(light->GetType());
-		float cutOff = light->GetCutOffAngle();
-		float outerCutOff = light->GetOuterCutOffAngle();
+		float cutOff = light->GetInnerAngle();
+		float outerCutOff = light->GetOuterAngle();
 		float constant = light->GetConstant();
 		float linear = light->GetLinear();
 		float quadratic = light->GetQuadratic();

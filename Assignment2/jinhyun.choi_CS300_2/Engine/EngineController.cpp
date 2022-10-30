@@ -60,10 +60,10 @@ void EngineController::Update()
 		for (auto core : engineCores)
 			core->Update();
 
+		GUI->End();
+
 		if (INPUT->IsTriggered(GLFW_KEY_ESCAPE))
 			isRunning = false;
-
-		GUI->End();
 	}
 }
 

@@ -65,6 +65,7 @@
     <ClInclude Include="GUIManager.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="Light.hpp" />
+    <ClInclude Include="LightTypeHelper.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="MeshManager.hpp" />
     <ClInclude Include="Object.hpp" />

@@ -18,13 +18,14 @@ struct UniformBufferData
 	GLint size;
 };
 
+class Object;
 class UniformBlockObjectManager
 {
 public:
 	void InitializeTransform();
 	void InitializeLight();
 	void BindTransformData(const Transform* model, const Camera* camera);
-	void BindLightData(std::vector<std::pair<Transform*, Light*>> lights);
+	void BindLightData(std::vector<Object* > objects);
 
 private:
 	std::unordered_map<UniformBufferType, UniformBufferData> uniformBuffers;

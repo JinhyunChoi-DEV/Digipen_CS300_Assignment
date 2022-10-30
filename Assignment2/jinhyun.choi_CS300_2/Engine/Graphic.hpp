@@ -45,6 +45,7 @@ private:
 	void DrawObject(const Transform* transform, const Mesh* mesh);
 	void DrawSolid(const Transform* transform, const Mesh* mesh);
 	void DrawLine(const Transform* transform, const Mesh* mesh);
+	void DrawLight(const Transform* transform, const Mesh* mesh, const Light* light);
 	void DrawVertexNormal(const Transform* transform, const Mesh* mesh);
 	void DrawFaceNormal(const Transform* transform, const Mesh* mesh);
 

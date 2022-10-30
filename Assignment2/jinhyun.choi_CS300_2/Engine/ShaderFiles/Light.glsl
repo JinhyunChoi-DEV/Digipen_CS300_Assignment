@@ -56,7 +56,7 @@ vec3 getColorResult(in vec3 ambient, in vec3 diffuse, in vec3 specular, in vec3 
 
 vec3 calcuateLight(in vec3 normalVector, in vec3 objectPos, in vec3 viewPos, in bool isBlinn)
 {
-	float ambientStrenght = 0.5;
+	float ambientStrenght = 0.1;
 	float exp = 32.0;
 
 	vec3 result = vec3(0);
@@ -84,7 +84,6 @@ vec3 getAmbient(in float k, Light light)
 vec3 getDiffuse(in float k, in vec3 normalVector, in vec3 objectPos, Light light)
 {
 	vec3 normal = normalize(normalVector);
-
 	vec3 lightDir;
 	if (light.type == 0)
 	{

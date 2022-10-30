@@ -150,6 +150,9 @@
     <ClInclude Include="Light.hpp">
       <Filter>Engine\Light</Filter>
     </ClInclude>
+    <ClInclude Include="LightTypeHelper.hpp">
+      <Filter>Engine\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">

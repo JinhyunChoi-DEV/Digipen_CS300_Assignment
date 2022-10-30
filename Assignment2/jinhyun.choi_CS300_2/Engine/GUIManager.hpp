@@ -21,9 +21,9 @@ public:
 	~GUIManager() = default;
 
 	void Initialize();
+	void Terminate();
 	void Begin();
 	void End();
-	void Terminate();
 
 private:
 	const char* glslVersion;

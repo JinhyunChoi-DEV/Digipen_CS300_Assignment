@@ -161,7 +161,7 @@ namespace
 	{
 		Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, DrawType::ObjectModel);
 
-		Object* object = new Object();
+		Object* object = new Object(name);
 		object->AddComponent(mesh);
 		OBJECTMANAGER->Add(name, object);
 		MESHES->Add(name, mesh);

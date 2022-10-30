@@ -26,6 +26,7 @@ End Header --------------------------------------------------------*/
 #include "Transform.hpp"
 #include "Graphic.hpp"
 #include "Light.hpp"
+#include "LightTypeHelper.hpp"
 #include "Shader.hpp"
 
 Assignment2Stage::Assignment2Stage()
@@ -35,8 +36,11 @@ Assignment2Stage::Assignment2Stage()
 	objectLoader = new ObjectLoader();
 	orbitRadius = 1.0f;
 	lastUpdateTime = 0.0f;
+	rotationTime = 0.0f;
 	drawVertex = false;
 	drawFace = false;
+	pauseRotation = false;
+	activeLightCount = 1;
 	pi = glm::pi<float>();
 
 	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
@@ -53,7 +57,7 @@ void Assignment2Stage::Initialize()
 	CreateCamera();
 	LoadAllObjects();
 	CreateObject();
-	CreateLightObject();
+	CreateOrbit();
 	CreateLightBall();
 	selectedShader = reloadingShaderNames[0];
 }
@@ -62,10 +66,12 @@ void Assignment2Stage::Update()
 {
 	float time = (float)glfwGetTime();
 	float dt = time - lastUpdateTime;
-	OBJECTMANAGER->GetObject("MainObject")->GetComponent<Transform>()->SetRotation(time *10, Y);
 
 	UpdateCamera(dt);
-	UpdateLightBall(time);
+
+	if(!pauseRotation)
+		UpdateLightBall(dt);
+
 	UpdateGUI();
 
 	lastUpdateTime = time;
@@ -114,23 +120,24 @@ void Assignment2Stage::UpdateCamera(float dt)
 		camera->SetPitch(-moveSpeed * 2);
 }
 
-void Assignment2Stage::UpdateLightBall(float time)
+void Assignment2Stage::UpdateLightBall(float dt)
 {
-	float step = 2 * pi / spheres.size();
-	for (unsigned i = 0; i < spheres.size(); ++i)
+	rotationTime += dt;
+	float step = 2 * pi / lightBalls.size();
+	for (unsigned i = 0; i < lightBalls.size(); ++i)
 	{
 		float additionAngle = step * i;
-		auto transform = spheres[i]->GetComponent<Transform>();
-		float x = 5 * cosf(time + additionAngle);
+		auto transform = lightBalls[i]->GetComponent<Transform>();
+		float x = 5 * cosf(rotationTime + additionAngle);
 		float y = 0;
-		float z = 5 * sinf(time + additionAngle);
+		float z = 5 * sinf(rotationTime + additionAngle);
 		transform->SetTranslate({ x, y , z });
 
-		auto light = spheres[i]->GetComponent<Light>();
+		auto light = lightBalls[i]->GetComponent<Light>();
 		auto mainTransform = mainObject->GetComponent<Transform>();
 
-		auto test = mainTransform->GetPosition() - transform->GetPosition();
-		light->SetDirection(glm::vec3(test.x, 0, test.z));
+		auto newDir = mainTransform->GetPosition() - transform->GetPosition();
+		light->SetDirection(newDir);
 	}
 }
 
@@ -144,13 +151,13 @@ void Assignment2Stage::CreateCamera()
 	camera->SetOriginData(data);
 }
 
-void Assignment2Stage::CreateLightObject()
+void Assignment2Stage::CreateOrbit()
 {
 	auto orbitMesh = OrbitSphere(orbitLineName, orbitRadius, 50);
 	auto meshOrbit = orbitMesh.GetMesh();
 	MESHES->Add(meshOrbit->GetName(), meshOrbit);
 
-	Object* orbit = new Object();
+	Object* orbit = new Object("orbit");
 	orbit->AddComponent(meshOrbit);
 	orbit->AddComponent(new Transform());
 	orbit->GetComponent<Transform>()->SetTranslate(glm::vec3{ 0, 0, 0 });
@@ -161,7 +168,7 @@ void Assignment2Stage::CreateLightObject()
 
 void Assignment2Stage::CreateObject()
 {
-	auto main = new Object;
+	auto main = new Object("MainObject");
 	main->AddComponent(new Mesh(MESHES->GetMesh(loadFiles[0])));
 	main->AddComponent(new Transform);
 	OBJECTMANAGER->Add("MainObject", main);
@@ -170,7 +177,7 @@ void Assignment2Stage::CreateObject()
 	mainObject->GetComponent<Transform>()->SetTranslate(glm::vec3(0));
 	mainObject->GetComponent<Transform>()->SetScale(glm::vec3(1));
 
-	auto floor = new Object;
+	auto floor = new Object("FloorObject");
 	floor->AddComponent(new Mesh(MESHES->GetMesh("quad")));
 	floor->AddComponent(new Transform);
 	floor->GetComponent<Mesh>()->SetColor(glm::vec3(0.5, 0.5, 0));
@@ -192,7 +199,7 @@ void Assignment2Stage::CreateLightBall()
 
 	constexpr float pi = glm::pi<float>();
 	float step = 2 * pi / (float)objectCount;
-	std::string baseName = "sphere";
+	std::string baseName = "Light";
 	for (int i = 0; i < objectCount; ++i)
 	{
 		float angle = step * (float)i;
@@ -200,28 +207,42 @@ void Assignment2Stage::CreateLightBall()
 		float y = 0.0f;
 		float z = orbitRadius * sinf(angle);
 
-		Object* object = new Object();
+		std::string name = baseName + std::to_string(i + 1);
+		Object* object = new Object(name);
 		object->AddComponent(meshSphere);
 		object->AddComponent(new Light());
+
+		if (activeLightCount <= i)
+			object->SetActive(false);
 
 		object->AddComponent(new Transform());
 		object->GetComponent<Transform>()->SetTranslate({ x*scale.x, y*scale.y, z* scale.z});
 		object->GetComponent<Transform>()->SetScale(glm::vec3{ 0.2, 0.2, 0.2 });
-		OBJECTMANAGER->Add(baseName + std::to_string(i), object);
+		OBJECTMANAGER->Add(name, object);
+
+		if (i == 0)
+			selectedLight = name;
 
 		auto light = object->GetComponent<Light>();
-		light->SetType(LightType::Spotlight);
-		auto dir = mainObject->GetComponent<Transform>()->GetPosition() - object->GetComponent<Transform>()->GetPosition();
-		light->SetDirection(dir);
-		light->SetCutOff(23.0f);
-		light->SetOuterCutOff(27.5f);
-		spheres.push_back(object);
+		light->SetType(LightType::Directional);
+		light->SetDirection({1,0,0});
+		light->SetInnerAngle(23.0f);
+		light->SetOuterAngle(27.5f);
+		lightBalls.push_back(object);
 	}
+}
+
+void Assignment2Stage::UpdateGUI()
+{
+	ModelsGUI();
+	NormalDrawGUI();
+	ReloadShaderGUI();
+	LightingBallGUI();
 }
 
 void Assignment2Stage::ModelsGUI()
 {
-	if (ImGui::TreeNode("Models"))
+	if(ImGui::CollapsingHeader("Models"))
 	{
 		auto mesh = mainObject->GetComponent<Mesh>();
 
@@ -244,25 +265,23 @@ void Assignment2Stage::ModelsGUI()
 
 			ImGui::EndCombo();
 		}
-		ImGui::TreePop();
 	}
 }
 
 void Assignment2Stage::NormalDrawGUI()
 {
-	if (ImGui::TreeNode("DrawNormal"))
+	if (ImGui::CollapsingHeader("DrawNormal"))
 	{
 		ImGui::Checkbox("Draw Vertex Normal", &drawVertex);
 		ImGui::Checkbox("Draw Face Normal", &drawFace);
 
 		GRAPHIC->SetDrawNormal(drawVertex, drawFace);
-		ImGui::TreePop();
 	}
 }
 
 void Assignment2Stage::ReloadShaderGUI()
 {
-	if (ImGui::TreeNode("Shader"))
+	if (ImGui::CollapsingHeader("Shader"))
 	{
 		if (ImGui::BeginCombo("Shader Lists", selectedShader.c_str()))
 		{
@@ -290,14 +309,204 @@ void Assignment2Stage::ReloadShaderGUI()
 				floorObject->GetComponent<Mesh>()->SetShader(selectedShader);
 			}
 		}
-
-		ImGui::TreePop();
 	}
 }
 
-void Assignment2Stage::UpdateGUI()
+void Assignment2Stage::LightingBallGUI()
 {
-	ModelsGUI();
-	NormalDrawGUI();
-	ReloadShaderGUI();
+	auto selectedLightObject = OBJECTMANAGER->GetObject(selectedLight);
+	auto lights = OBJECTMANAGER->GetLights();
+	std::sort(lights.begin(), lights.end(), [](Object* a, Object* b)
+	{
+		if(a->GetName().size() == b->GetName().size())
+			return a->GetName() < b->GetName();
+
+		return a->GetName().size() < b->GetName().size();
+	});
+
+	if(ImGui::CollapsingHeader("Light Control"))
+	{
+		ImGui::Text("Light Object Count");
+		if(ImGui::SliderInt("Count", &activeLightCount, 1, 16))
+			SetActiveLightBalls(activeLightCount);
+
+		ImGui::NewLine();
+		ImGui::Text("Orbit Rotate Action");
+		ImGui::Checkbox("Pause Rotation", &pauseRotation);
+
+		// Scenarios Buttons
+		ImGui::NewLine();
+		ImGui::Text("Lighting Scenarios");
+		if(ImGui::Button("Scenario 1"))
+		{
+			glm::vec3 color = { 1,1,1 };
+			SetScenario1(5, color);
+		}
+		ImGui::SameLine();
+
+		if(ImGui::Button("Scenario 2"))
+		{
+			std::vector<glm::vec3> colors =
+			{
+				{0.230f, 0.917f, 0.081f}, {0.086f, 0.350f, 0.971f,},
+				{0.956f, 0.056f, 0.056f}, {0.795f, 0.113f, 0.887f},
+				{0.113f, 0.887f, 0.705f}, {0.887f, 0.842f, 0.113f}, {0.887f, 0.409f, 0.113f}
+			};
+			SetScenario2(colors);
+		}
+		ImGui::SameLine();
+
+		if(ImGui::Button("Scenario 3"))
+		{
+			SetScenario3(11);
+		}
+		ImGui::SameLine();
+
+		// All Light Lists
+		ImGui::NewLine();
+		ImGui::Text("Light List");
+		if(ImGui::BeginCombo("Selected Light", selectedLight.c_str()))
+		{
+			for(int i =0; i<lights.size(); ++i)
+			{
+				bool isSelected = selectedLight == lights[i]->GetName();
+				if (ImGui::Selectable(lights[i]->GetName().c_str(), isSelected))
+				{
+					selectedLight = lights[i]->GetName();
+					selectedLightObject = OBJECTMANAGER->GetObject(selectedLight);
+				}
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+
+		// Each Light Infos
+		if(ImGui::TreeNode("Light Status"))
+		{
+			auto light = selectedLightObject->GetComponent<Light>();
+			auto type = light->GetType();
+			auto preview = GetLightTypeString(type);
+			if(ImGui::BeginCombo("Type", preview.c_str()))
+			{
+				auto lightTypes = GetLightTypesString();
+				for(int i =0; i<lightTypes.size(); ++i)
+				{
+					bool isSelected = preview == lightTypes[i];
+					if(ImGui::Selectable(lightTypes[i].c_str(), isSelected))
+					{
+						type = GetTypeFromString(lightTypes[i]);
+						light->SetType(type);
+					}
+
+					if(isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
+			}
+
+			// Color
+			auto color = light->GetAmientIntensity();
+			if(ImGui::ColorEdit3("Ambient", &color[0]))
+			{
+				light->SetAmientIntensity(color);
+			}
+
+			color = light->GetDiffuseIntensity();
+			if (ImGui::ColorEdit3("Diffuse", &color[0]))
+			{
+				light->SetDiffuseIntensity(color);
+			}
+
+			color = light->GetSpecularIntensity();
+			if (ImGui::ColorEdit3("Specular", &color[0]))
+			{
+				light->SetSpecularIntensity(color);
+			}
+
+			// Spotlight Data
+			if(type == LightType::Spotlight)
+			{
+				auto innerAngle = light->GetInnerAngle();
+				auto outerAngle = light->GetOuterAngle();
+
+				if(ImGui::SliderFloat("Inner Angle", &innerAngle, 0, 90))
+				{
+					if (innerAngle < outerAngle)
+						light->SetInnerAngle(innerAngle);
+				}
+
+				if (ImGui::SliderFloat("Outer Angle", &outerAngle, 0, 90))
+				{
+					light->SetOuterAngle(outerAngle);
+					if (innerAngle > outerAngle)
+						light->SetInnerAngle(outerAngle);
+				}
+			}
+
+			ImGui::TreePop();
+		}
+	}
+}
+
+void Assignment2Stage::SetActiveLightBalls(int count)
+{
+	activeLightCount = count;
+	for (int i = 0; i < lightBalls.size(); ++i)
+	{
+		if (activeLightCount <= i)
+			lightBalls[i]->SetActive(false);
+		else
+			lightBalls[i]->SetActive(true);
+	}
+	selectedLight = lightBalls[0]->GetName();
+}
+
+void Assignment2Stage::SetScenario1(int count, glm::vec3 color)
+{
+	SetActiveLightBalls(count);
+
+	auto lights = OBJECTMANAGER->GetLights();
+	for(int i =0; i<count; ++i)
+	{
+		auto light = lights[i]->GetComponent<Light>();
+		light->SetType(LightType::Point);
+		light->SetColor(color);
+	}
+}
+
+void Assignment2Stage::SetScenario2(std::vector<glm::vec3> colors)
+{
+	int count = colors.size();
+	SetActiveLightBalls(count);
+
+	auto lights = OBJECTMANAGER->GetLights();
+	for (int i = 0; i < count; ++i)
+	{
+		auto light = lights[i]->GetComponent<Light>();
+		light->SetType(LightType::Spotlight);
+
+		light->SetColor(colors[i]);
+	}
+}
+
+void Assignment2Stage::SetScenario3(int count)
+{
+	SetActiveLightBalls(count);
+
+	auto lights = OBJECTMANAGER->GetLights();
+	for (int i = 0; i < count; ++i)
+	{
+		auto light = lights[i]->GetComponent<Light>();
+		auto type = rand() % (int)LightType::Count;
+		light->SetType(static_cast<LightType>(type));
+
+		float r = (float)rand() / (float)RAND_MAX;
+		float g = (float)rand() / (float)RAND_MAX;
+		float b = (float)rand() / (float)RAND_MAX;
+		light->SetColor({ r,g,b, });
+	}
 }

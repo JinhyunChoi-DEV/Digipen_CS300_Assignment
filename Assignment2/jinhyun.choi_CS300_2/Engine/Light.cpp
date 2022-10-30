@@ -4,7 +4,7 @@
 
 Light::Light() : direction(0),
                  ambient(1.0f, 1.0f, 1.0f), diffuse(1.0f, 1.0f, 1.0f), specular(1.0f, 1.0f, 1.0f),
-                 type(LightType::Directional), cuttOff(0.0f), outerCutOff(0.0f),
+                 type(LightType::Directional), innerAngle(0.0f), outerAngle(0.0f),
                  constant(1.0f), linear(0.22f), quadratic(0.2f), fallOut(1.0f)
 { }
 
@@ -42,14 +42,14 @@ void Light::SetType(LightType type)
 	this->type = type;
 }
 
-void Light::SetCutOff(float cutOff)
+void Light::SetInnerAngle(float innerAngle)
 {
-	this->cuttOff = cutOff;
+	this->innerAngle = innerAngle;
 }
 
-void Light::SetOuterCutOff(float outerCutOff)
+void Light::SetOuterAngle(float outerAngle)
 {
-	this->outerCutOff = outerCutOff;
+	this->outerAngle = outerAngle;
 }
 
 void Light::SetConstant(float constant)
@@ -70,4 +70,11 @@ void Light::SetQuadratic(float quadratic)
 void Light::SetFallOut(float fallOut)
 {
 	this->fallOut = fallOut;
+}
+
+void Light::SetColor(glm::vec3 color)
+{
+	SetAmientIntensity(color);
+	SetDiffuseIntensity(color);
+	SetSpecularIntensity(color);
 }

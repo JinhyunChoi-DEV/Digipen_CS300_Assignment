@@ -101,28 +101,11 @@ Shader* Graphic::GetShader(std::string name) const
 
 void Graphic::UpdateLight()
 {
-	const auto objects = OBJECTMANAGER->GetObjects();
+	const auto objects = OBJECTMANAGER->GetLights();
 	if (objects.empty())
 		return;
 
-	std::vector<std::pair<Transform*, Light*>> activeLights;
-	for (auto pair : objects)
-	{
-		auto object = pair.second;
-
-		if (!object->IsActive())
-			continue;
-
-		auto transformData = object->GetComponent<Transform>();
-		auto light = object->GetComponent<Light>();
-
-		if(light == nullptr || transformData == nullptr)
-			continue;
-
-		activeLights.push_back(std::make_pair(transformData, light));
-	}
-
-	uboManager->BindLightData(activeLights);
+	uboManager->BindLightData(objects);
 }
 
 void Graphic::Draw()
@@ -162,7 +145,13 @@ void Graphic::Draw()
 			DrawLine(transformData, meshData);
 
 		if (type == DrawType::Light)
-			DrawSolid(transformData, meshData);
+		{
+			auto lightData = object->GetComponent<Light>();
+			if(lightData == nullptr)
+				continue;
+
+			DrawLight(transformData, meshData, lightData);
+		}
 	}
 }
 
@@ -244,6 +233,30 @@ void Graphic::DrawLine(const Transform* transform, const Mesh* mesh)
 	glBindVertexArray(VAO);
 
 	glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertices.size()));
+
+	glBindVertexArray(0);
+}
+
+void Graphic::DrawLight(const Transform* transform, const Mesh* mesh, const Light* light)
+{
+	auto VAO = vertexObjectManager->GetObjectVAO(mesh);
+
+	if (VAO == 0)
+		return;
+
+	auto shader = mesh->GetShader();
+	auto color = light->GetDiffuseIntensity();
+
+	shader->Use();
+	uboManager->BindTransformData(transform, camera);
+	shader->Set("vertexColor", color);
+
+	glBindVertexArray(VAO);
+
+	if (mesh->GetIsMultipleFaceIndex())
+		glDrawElements(GL_TRIANGLE_FAN, static_cast<int>(mesh->GetIndices().size()), GL_UNSIGNED_INT, nullptr);
+	else
+		glDrawElements(GL_TRIANGLES, static_cast<int>(mesh->GetIndices().size()), GL_UNSIGNED_INT, nullptr);
 
 	glBindVertexArray(0);
 }

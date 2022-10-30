@@ -37,24 +37,34 @@ private:
 	void UpdateLightBall(float time);
 
 	void CreateCamera();
-	void CreateLightObject();
+	void CreateOrbit();
 	void CreateObject();
 	void CreateLightBall();
+
 	void ModelsGUI();
 	void NormalDrawGUI();
 	void ReloadShaderGUI();
+	void LightingBallGUI();
+	void SetActiveLightBalls(int count);
+
+	void SetScenario1(int count, glm::vec3 color);
+	void SetScenario2(std::vector<glm::vec3> colors);
+	void SetScenario3(int count);
 
 	void UpdateGUI();
-	std::vector<Object*> spheres;
+	std::vector<Object*> lightBalls;
 	std::vector<std::string> reloadingShaderNames;
 	glm::vec3 orbitScale{1,1,1};
 	glm::vec2 lastMousePos {-1, -1};
 
+	int activeLightCount;
+	float rotationTime;
 	float orbitRadius;
 	float pi;
 	float lastUpdateTime;
 	bool drawVertex;
 	bool drawFace;
+	bool pauseRotation;
 	Camera* camera = nullptr;
 	ObjectLoader* objectLoader = nullptr;
 	Object* mainObject = nullptr;
@@ -63,5 +73,6 @@ private:
 	std::string orbitLineName;
 	std::string selectedObject;
 	std::string selectedShader;
+	std::string selectedLight;
 	std::vector<std::string> loadFiles;
 };

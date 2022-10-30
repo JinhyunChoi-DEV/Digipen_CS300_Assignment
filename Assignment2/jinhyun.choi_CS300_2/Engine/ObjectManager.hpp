@@ -29,6 +29,7 @@ public:
 	void Add(std::string name, Object* obj);
 	void Delete(std::string name);
 
+	std::vector<Object*> GetLights() const;
 	std::unordered_map<std::string, Object*>& GetObjects() const {return objects;}
 	Object* GetObject(std::string name) const { return objects[name]; }
 
