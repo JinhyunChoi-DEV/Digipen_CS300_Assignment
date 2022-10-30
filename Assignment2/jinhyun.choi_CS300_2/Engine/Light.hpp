@@ -27,7 +27,7 @@ public:
 	void SetConstant(float constant);
 	void SetLinear(float linear);
 	void SetQuadratic(float quadratic);
-	void SetColor(glm::vec3 color);	
+	void SetFallOut(float fallOut);
 
 	glm::vec3 GetDirection() const { return direction; }
 	glm::vec3 GetAmientIntensity() const { return ambient; }
@@ -39,7 +39,7 @@ public:
 	float GetConstant() const { return constant; }
 	float GetLinear() const { return linear; }
 	float GetQuadratic() const { return quadratic; }
-	glm::vec3 GetColor() const { return color; }
+	float GetFallOut() const { return fallOut; }
 
 private:
 	glm::vec3 direction;
@@ -56,5 +56,5 @@ private:
 	float linear;
 	float quadratic;
 
-	glm::vec3 color;
+	float fallOut;
 };

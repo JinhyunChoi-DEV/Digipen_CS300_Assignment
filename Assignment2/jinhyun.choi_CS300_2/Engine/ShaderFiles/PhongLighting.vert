@@ -25,14 +25,7 @@ void main()
 {
 	vec3 normalVector = mat3(transpose(inverse(transform.model))) * normal;
 	vec3 objectPos = vec3(transform.model * vec4(position, 1.0));
-	float ambientStrenght = 0.5;
 
-	vec3 ambient = getAmbient(ambientStrenght);
-	vec3 diffuse = getDiffuse(1.0, normalVector, objectPos);
-	vec3 specular = getSpecular(1.0, 32.0, normalVector, objectPos, cameraPos);
-	vec3 resultLight = getColorResult(ambient, diffuse, specular, objectPos, cameraPos);
-	vec3 result = resultLight * objectColor;
-
-	resultColor = result;
+	resultColor = calcuateLight(normalVector, objectPos, cameraPos, false) * objectColor;
 	gl_Position = getPosition(position);
 }

@@ -34,7 +34,7 @@ public:
 private:
 	void LoadAllObjects();
 	void UpdateCamera(float dt);
-	void UpdateSpheres(float time);
+	void UpdateLightBall(float time);
 
 	void CreateCamera();
 	void CreateLightObject();

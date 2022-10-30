@@ -13,10 +13,11 @@ Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
 
-layout(std140, binding = 1) uniform Light
-{
-    uint type;			// 0, Directional=0, Point=1, Spotlight=2
+#define LIGHT_MAX 16
 
+struct Light
+{
+	uint type;			// 0, Directional=0, Point=1, Spotlight=2
 	vec3 position;		// 16
 	vec3 direction;		// 32
 	vec3 ambient;		// 48
@@ -30,20 +31,57 @@ layout(std140, binding = 1) uniform Light
 	float linear;		// 104
 	float quadratic;	// 108
 
+	float fallOut;		// 112
 	/* 
 	Total = type(16) + position(16) + 
 	direction(16) + ambient(16) + diffuse(16) +
 	specular(12) + cutoff(4) + 
-	outerCutOff(4) + constant(4) + linear(4) + quadratic(4) = 112
+	outerCutOff(4) + constant(4) + linear(4) + quadratic(4) +
+	fallOut(16) = 128
 	*/
-} light;
+};
 
-vec3 getAmbient(in float k)
+layout(std140, binding = 1) uniform Lights
+{
+	uint lightCount;			// 16
+	Light light[LIGHT_MAX];		// 128 each one
+} lights;
+
+vec3 calcuateLight(in vec3 normalVector, in vec3 objectPos, in vec3 viewPos, in bool isBlinn);
+vec3 getAmbient(in float k, Light light);
+vec3 getDiffuse(in float k, in vec3 normalVector, in vec3 objectPos, Light light);
+vec3 getSpecular(in float k, in float exp, in vec3 normalVector, in vec3 objectPos, in vec3 viewPos,  Light light);
+vec3 getSpecularBlinn(in float k, in float exp, in vec3 normalVector, in vec3 objectPos, in vec3 viewPos, Light light);
+vec3 getColorResult(in vec3 ambient, in vec3 diffuse, in vec3 specular, in vec3 objectPos, in vec3 viewPos, Light light);
+
+vec3 calcuateLight(in vec3 normalVector, in vec3 objectPos, in vec3 viewPos, in bool isBlinn)
+{
+	float ambientStrenght = 0.5;
+	float exp = 32.0;
+
+	vec3 result = vec3(0);
+	for(int i=0; i<lights.lightCount; ++i)
+	{
+		vec3 ambient = getAmbient(ambientStrenght, lights.light[i]);
+		vec3 diffuse = getDiffuse(1.0, normalVector, objectPos, lights.light[i]);
+		vec3 specular;
+		if(isBlinn)
+			specular = getSpecularBlinn(1.0, exp, normalVector, objectPos, viewPos, lights.light[i]);
+		else
+			specular = getSpecular(1.0, exp, normalVector, objectPos, viewPos, lights.light[i]);
+
+		result += getColorResult(ambient, diffuse, specular, objectPos, viewPos, lights.light[i]);
+	}
+
+	return result;
+}
+
+vec3 getAmbient(in float k, Light light)
 {
 	return light.ambient * k;
 }
 
-vec3 getDiffuse(in float k, in vec3 normalVector, in vec3 objectPos)
+vec3 getDiffuse(in float k, in vec3 normalVector, in vec3 objectPos, Light light)
 {
 	vec3 normal = normalize(normalVector);
 
@@ -58,11 +96,10 @@ vec3 getDiffuse(in float k, in vec3 normalVector, in vec3 objectPos)
 	}
 
 	float diff = max(dot(normal, lightDir), 0.0);
-
 	return light.diffuse * k * diff;
 }
 
-vec3 getSpecular(in float k, in float exp, in vec3 normalVector, in vec3 objectPos, in vec3 viewPos)
+vec3 getSpecular(in float k, in float exp, in vec3 normalVector, in vec3 objectPos, in vec3 viewPos,  Light light)
 {
 	vec3 normal = normalize(normalVector);
 	vec3 lightDir;
@@ -81,7 +118,7 @@ vec3 getSpecular(in float k, in float exp, in vec3 normalVector, in vec3 objectP
 	return light.specular * k * spec;
 }
 
-vec3 getSpecularBlinn(in float k, in float exp, in vec3 normalVector, in vec3 objectPos, in vec3 viewPos)
+vec3 getSpecularBlinn(in float k, in float exp, in vec3 normalVector, in vec3 objectPos, in vec3 viewPos, Light light)
 {
 	vec3 normal = normalize(normalVector);
 	vec3 lightDir;
@@ -100,32 +137,43 @@ vec3 getSpecularBlinn(in float k, in float exp, in vec3 normalVector, in vec3 ob
 	return light.specular * k * spec;
 }
 
-vec3 getColorResult(in vec3 ambient, in vec3 diffuse, in vec3 specular, in vec3 objectPos, in vec3 viewPos)
+vec3 getColorResult(in vec3 ambient, in vec3 diffuse, in vec3 specular, in vec3 objectPos, in vec3 viewPos, Light light)
 {
-	if (light.type == 0)
+	if (light.type == 0) // Directional
 	{
 		return ambient + diffuse + specular;
 	}
-	else if (light.type == 1)
+	else if (light.type == 1) // Point
 	{
 		float distance = length(light.position - objectPos);
-		float att = 1.0/(light.constant + light.linear * distance + light.quadratic * (distance*distance));
+		float att = min(1.0/(light.constant + light.linear * distance + light.quadratic * (distance*distance)), 1.0);
 		return (ambient + diffuse + specular) * att ;
 	}
-	else if (light.type == 2)
+	else if (light.type == 2) //Spot
 	{
-		vec3 lightDir = normalize(light.position - objectPos);
-		vec3 viewDir = normalize(viewPos - objectPos);
-		float angle = dot(lightDir, viewDir);
-		float innerAngle = cos(radians(light.cutOff));
-		float outerAngle = cos(radians(light.outerCutOff));
-		float spot = (outerAngle - angle)/(outerAngle - innerAngle);
+		float spotEffect = 0;
+		vec3 lightDir= normalize(light.direction);
+		vec3 vertextoLightDir = normalize(objectPos - light.position);
+		float angle = dot(lightDir, vertextoLightDir);
+		float phi = cos(radians(light.outerCutOff));
+		float theta = cos(radians(light.cutOff));
 		float distance = length(light.position - objectPos);
-		float att = 1.0/(light.constant + light.linear * distance + light.quadratic * (distance*distance));
+		float att = min(1.0/(light.constant + light.linear * distance + light.quadratic * (distance*distance)), 1.0);
 
-		//return att * (ambient + diffuse + specular);
-		return att * ambient + att * spot * (diffuse + specular);
+		if(angle < phi)
+		{
+			spotEffect = 0;
+		}
+		else if(angle > theta)
+		{
+			spotEffect = 1;
+		}
+		else
+		{
+			spotEffect = pow(clamp((angle-phi)/(theta-phi), 0.0, 1.0), light.fallOut);
+		}
+		
+		return att * spotEffect * (ambient+diffuse + specular);
 	}
-
 	return vec3(0.0, 0.0, 0.0);
 }

@@ -1,7 +1,10 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
 
 #include "UniformBlockObjectManager.hpp"
+
+#include <iostream>
 
 #include "Graphic.hpp"
 #include "ObjectManager.hpp"
@@ -28,7 +31,7 @@ void UniformBlockObjectManager::InitializeLight()
 	UniformBufferData data;
 	data.index = lightIndex;
 	// Light.glsl
-	data.size = 112;
+	data.size = 128 * lightMaxCount + 16;
 
 	glGenBuffers(1, &data.UBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
@@ -60,44 +63,61 @@ void UniformBlockObjectManager::BindTransformData(const Transform* model, const 
 }
 
 
-void UniformBlockObjectManager::BindLightData(const Transform* model, const Light* light)
+void UniformBlockObjectManager::BindLightData(std::vector<std::pair<Transform*, Light*>> lights)
 {
+	int activeCount = lights.size();
+	if (activeCount <= 0)
+		return;
+
 	if (uniformBuffers.find(UniformBufferType::Light) == uniformBuffers.end())
 		InitializeLight();
 
 	auto bufferInfo = uniformBuffers.find(UniformBufferType::Light);
 	auto data = bufferInfo->second;
-	unsigned int type = static_cast<std::underlying_type<LightType>::type>(light->GetType());
-	float cutOff = light->GetCutOffAngle();
-	float outerCutOff = light->GetOuterCutOffAngle();
-	float constant = light->GetConstant();
-	float linear = light->GetLinear();
-	float quadratic = light->GetQuadratic();
-
 	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
 
 	GLint offset = 0;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(unsigned int), &type);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(unsigned int), &activeCount);
 	offset += 16;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(model->GetPosition()));
-	offset += 16;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetDirection()));
-	offset += 16;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetAmientIntensity()));
-	offset += 16;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetDiffuseIntensity()));
-	offset += 16;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetSpecularIntensity()));
-	offset += 12;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &cutOff);
-	offset += 4;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &outerCutOff);
-	offset += 4;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &constant);
-	offset += 4;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &linear);
-	offset += 4;
-	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &quadratic);
+
+	for(int i = 0; i<activeCount; ++i)
+	{
+		auto model = lights[i].first;
+		auto light = lights[i].second;
+
+		unsigned int type = static_cast<std::underlying_type<LightType>::type>(light->GetType());
+		float cutOff = light->GetCutOffAngle();
+		float outerCutOff = light->GetOuterCutOffAngle();
+		float constant = light->GetConstant();
+		float linear = light->GetLinear();
+		float quadratic = light->GetQuadratic();
+		float fallOut = light->GetFallOut();
+
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(unsigned int), &type);
+		offset += 16;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(model->GetPosition()));
+		offset += 16;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetDirection()));
+		offset += 16;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetAmientIntensity()));
+		offset += 16;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetDiffuseIntensity()));
+		offset += 16;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetSpecularIntensity()));
+		offset += 12;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &cutOff);
+		offset += 4;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &outerCutOff);
+		offset += 4;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &constant);
+		offset += 4;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &linear);
+		offset += 4;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &quadratic);
+		offset += 4;
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &fallOut);
+		offset += 16;
+	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

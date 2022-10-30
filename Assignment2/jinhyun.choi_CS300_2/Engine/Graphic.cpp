@@ -105,6 +105,7 @@ void Graphic::UpdateLight()
 	if (objects.empty())
 		return;
 
+	std::vector<std::pair<Transform*, Light*>> activeLights;
 	for (auto pair : objects)
 	{
 		auto object = pair.second;
@@ -118,8 +119,10 @@ void Graphic::UpdateLight()
 		if(light == nullptr || transformData == nullptr)
 			continue;
 
-		uboManager->BindLightData(transformData, light);
+		activeLights.push_back(std::make_pair(transformData, light));
 	}
+
+	uboManager->BindLightData(activeLights);
 }
 
 void Graphic::Draw()

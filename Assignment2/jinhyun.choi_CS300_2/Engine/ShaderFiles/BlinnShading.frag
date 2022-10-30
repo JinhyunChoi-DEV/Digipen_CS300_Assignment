@@ -22,13 +22,6 @@ uniform vec3 cameraPos;
 
 void main()
 {
-	float ambientStrenght = 0.5;
-
-	vec3 ambient = getAmbient(ambientStrenght);
-	vec3 diffuse = getDiffuse(1.0, outputNormal, objectPos);
-	vec3 specular = getSpecularBlinn(1.0, 32.0, outputNormal, objectPos, cameraPos);
-	vec3 resultLight = getColorResult(ambient, diffuse, specular, objectPos, cameraPos);
-	vec3 resultColor = (ambient + diffuse + specular) * objectColor;
-
+	vec3 resultColor = calcuateLight(outputNormal, objectPos, cameraPos, true) * objectColor;
 	outputColor = vec4(resultColor, 1.0);
 }

@@ -1,10 +1,11 @@
 #include "Light.hpp"
 
+#include <iostream>
+
 Light::Light() : direction(0),
-	ambient(1.0f, 1.0f, 1.0f), diffuse(1.0f, 1.0f, 1.0f), specular(1.0f, 1.0f, 1.0f),
-	type(LightType::Directional), cuttOff(0.0f), outerCutOff(0.0f),
-	constant(1.0f), linear(0.09f), quadratic(0.032f),
-	color(1.0f, 1.0f, 1.0f)
+                 ambient(1.0f, 1.0f, 1.0f), diffuse(1.0f, 1.0f, 1.0f), specular(1.0f, 1.0f, 1.0f),
+                 type(LightType::Directional), cuttOff(0.0f), outerCutOff(0.0f),
+                 constant(1.0f), linear(0.22f), quadratic(0.2f), fallOut(1.0f)
 { }
 
 void Light::Initialize()
@@ -66,7 +67,7 @@ void Light::SetQuadratic(float quadratic)
 	this->quadratic = quadratic;
 }
 
-void Light::SetColor(glm::vec3 color)
+void Light::SetFallOut(float fallOut)
 {
-	this->color = color;
+	this->fallOut = fallOut;
 }

@@ -18,5 +18,6 @@ out vec4 outputColor;
 
 void main()
 {
-	outputColor = vec4(resultColor, 1.0);
+	vec3 result = resultColor;
+	outputColor = vec4(result, 1.0);
 }

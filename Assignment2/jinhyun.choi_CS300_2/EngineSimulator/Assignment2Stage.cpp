@@ -40,21 +40,21 @@ Assignment2Stage::Assignment2Stage()
 	pi = glm::pi<float>();
 
 	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
-	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "Light.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", "TransformModel.glsl", nullptr);
 
-	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongLighting" , "BlinnShading", "PhongShading" });
+	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongShading", "PhongLighting" , "BlinnShading"});
 }
 
 void Assignment2Stage::Initialize()
 {
 	CreateCamera();
-	CreateLightObject();
-	CreateLightBall();
 	LoadAllObjects();
 	CreateObject();
+	CreateLightObject();
+	CreateLightBall();
 	selectedShader = reloadingShaderNames[0];
 }
 
@@ -65,7 +65,7 @@ void Assignment2Stage::Update()
 	OBJECTMANAGER->GetObject("MainObject")->GetComponent<Transform>()->SetRotation(time *10, Y);
 
 	UpdateCamera(dt);
-	UpdateSpheres(time);
+	UpdateLightBall(time);
 	UpdateGUI();
 
 	lastUpdateTime = time;
@@ -114,7 +114,7 @@ void Assignment2Stage::UpdateCamera(float dt)
 		camera->SetPitch(-moveSpeed * 2);
 }
 
-void Assignment2Stage::UpdateSpheres(float time)
+void Assignment2Stage::UpdateLightBall(float time)
 {
 	float step = 2 * pi / spheres.size();
 	for (unsigned i = 0; i < spheres.size(); ++i)
@@ -124,8 +124,13 @@ void Assignment2Stage::UpdateSpheres(float time)
 		float x = 5 * cosf(time + additionAngle);
 		float y = 0;
 		float z = 5 * sinf(time + additionAngle);
-
 		transform->SetTranslate({ x, y , z });
+
+		auto light = spheres[i]->GetComponent<Light>();
+		auto mainTransform = mainObject->GetComponent<Transform>();
+
+		auto test = mainTransform->GetPosition() - transform->GetPosition();
+		light->SetDirection(glm::vec3(test.x, 0, test.z));
 	}
 }
 
@@ -172,13 +177,13 @@ void Assignment2Stage::CreateObject()
 	OBJECTMANAGER->Add("FloorObject", floor);
 	floorObject = floor;
 	floorObject->GetComponent<Transform>()->SetTranslate(glm::vec3(0, -1, 0));
-	floorObject->GetComponent<Transform>()->SetScale(glm::vec3(5));
+	floorObject->GetComponent<Transform>()->SetScale(glm::vec3(10));
 	floorObject->GetComponent<Transform>()->SetRotation(-90, X);
 }
 
 void Assignment2Stage::CreateLightBall()
 {
-	int objectCount = 1;
+	int objectCount = 16;
 	glm::vec3 scale = orbitScale;
 	auto sphereMesh = SphereMesh(sphereMeshName, 1.0f, 25, 25);
 	auto meshSphere = sphereMesh.GetMesh();
@@ -199,16 +204,17 @@ void Assignment2Stage::CreateLightBall()
 		object->AddComponent(meshSphere);
 		object->AddComponent(new Light());
 
-		auto light = object->GetComponent<Light>();
-		light->SetType(LightType::Spotlight);
-		light->SetDirection(glm::vec3(0.0f, -1.0f, 0.0f));
-		light->SetCutOff(15.0f);
-		light->SetOuterCutOff(18.0f);
-
 		object->AddComponent(new Transform());
 		object->GetComponent<Transform>()->SetTranslate({ x*scale.x, y*scale.y, z* scale.z});
 		object->GetComponent<Transform>()->SetScale(glm::vec3{ 0.2, 0.2, 0.2 });
 		OBJECTMANAGER->Add(baseName + std::to_string(i), object);
+
+		auto light = object->GetComponent<Light>();
+		light->SetType(LightType::Spotlight);
+		auto dir = mainObject->GetComponent<Transform>()->GetPosition() - object->GetComponent<Transform>()->GetPosition();
+		light->SetDirection(dir);
+		light->SetCutOff(23.0f);
+		light->SetOuterCutOff(27.5f);
 		spheres.push_back(object);
 	}
 }

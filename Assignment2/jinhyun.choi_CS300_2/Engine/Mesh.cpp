@@ -20,7 +20,7 @@ Mesh::Mesh(std::string name, std::vector<glm::vec3> vertices, std::vector<glm::v
            std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices, DrawType type)
 		: name(name), positions(vertices), vertexNormals(vertexNormals), faceNormal(faceNormal), indices(indices), objectColor(glm::vec3(0.8, 0.8, 0.8)), type(type)
 {
-	shader = GRAPHIC->GetShader("PhongLighting");
+	shader = GRAPHIC->GetShader("PhongShading");
 
 	if(type == DrawType::ObjectModel)
 	{

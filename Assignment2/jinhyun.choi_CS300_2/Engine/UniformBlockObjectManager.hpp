@@ -24,11 +24,12 @@ public:
 	void InitializeTransform();
 	void InitializeLight();
 	void BindTransformData(const Transform* model, const Camera* camera);
-	void BindLightData(const Transform* model, const Light* light);
+	void BindLightData(std::vector<std::pair<Transform*, Light*>> lights);
 
 private:
 	std::unordered_map<UniformBufferType, UniformBufferData> uniformBuffers;
 
 	unsigned int transformIndex = 0;
 	unsigned int lightIndex = 1;
+	unsigned int lightMaxCount = 16;
 };
