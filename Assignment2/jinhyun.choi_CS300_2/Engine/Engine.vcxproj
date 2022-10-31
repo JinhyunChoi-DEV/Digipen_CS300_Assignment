@@ -38,6 +38,8 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
+    <ClCompile Include="PPM.cpp" />
+    <ClCompile Include="PPMFileReader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -71,12 +73,15 @@
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="ObjectLoader.hpp" />
     <ClInclude Include="ObjectManager.hpp" />
+    <ClInclude Include="PPM.hpp" />
+    <ClInclude Include="PPMFileReader.hpp" />
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="ShaderManager.hpp" />
     <ClInclude Include="StageBase.hpp" />
     <ClInclude Include="StageManager.hpp" />
     <ClInclude Include="Transform.hpp" />
     <ClInclude Include="UniformBlockObjectManager.hpp" />
+    <ClInclude Include="UVGenerator.hpp" />
     <ClInclude Include="VertexHelper.hpp" />
     <ClInclude Include="VertexObjectManager.hpp" />
   </ItemGroup>

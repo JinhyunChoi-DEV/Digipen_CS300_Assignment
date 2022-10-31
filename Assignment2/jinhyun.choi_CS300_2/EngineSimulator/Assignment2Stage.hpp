@@ -19,6 +19,7 @@ End Header --------------------------------------------------------*/
 #include "Camera.hpp"
 #include "Object.hpp"
 #include "ObjectLoader.hpp"
+#include "PPMFileReader.hpp"
 #include "StageBase.hpp"
 
 
@@ -50,12 +51,18 @@ private:
 	void SetScenario1(int count, glm::vec3 color);
 	void SetScenario2(std::vector<glm::vec3> colors);
 	void SetScenario3(int count);
-
 	void UpdateGUI();
+
 	std::vector<Object*> lightBalls;
 	std::vector<std::string> reloadingShaderNames;
 	glm::vec3 orbitScale{1,1,1};
 	glm::vec2 lastMousePos {-1, -1};
+
+	Camera* camera = nullptr;
+	ObjectLoader* objectLoader = nullptr;
+	PPMFileReader* ppmFileReader = nullptr;
+	Object* mainObject = nullptr;
+	Object* floorObject = nullptr;
 
 	int activeLightCount;
 	float rotationTime;
@@ -65,10 +72,6 @@ private:
 	bool drawVertex;
 	bool drawFace;
 	bool pauseRotation;
-	Camera* camera = nullptr;
-	ObjectLoader* objectLoader = nullptr;
-	Object* mainObject = nullptr;
-	Object* floorObject = nullptr;
 	std::string sphereMeshName;
 	std::string orbitLineName;
 	std::string selectedObject;

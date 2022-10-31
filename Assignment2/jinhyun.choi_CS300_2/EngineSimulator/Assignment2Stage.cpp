@@ -34,6 +34,7 @@ Assignment2Stage::Assignment2Stage()
 	sphereMeshName = "Default_Sphere";
 	orbitLineName = "Line_Orbit";
 	objectLoader = new ObjectLoader();
+	ppmFileReader = new PPMFileReader();
 	orbitRadius = 1.0f;
 	lastUpdateTime = 0.0f;
 	rotationTime = 0.0f;
@@ -49,6 +50,8 @@ Assignment2Stage::Assignment2Stage()
 	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", "TransformModel.glsl", nullptr);
 
+	ppmFileReader->Read("Metal_Roof_Diff", "metal_roof_diff_512x512.ppm");
+	ppmFileReader->Read("Metal_Roof_Spec", "metal_roof_spec_512x512.ppm");
 	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongShading", "PhongLighting" , "BlinnShading"});
 }
 
@@ -59,6 +62,7 @@ void Assignment2Stage::Initialize()
 	CreateObject();
 	CreateOrbit();
 	CreateLightBall();
+
 	selectedShader = reloadingShaderNames[0];
 }
 
@@ -224,7 +228,7 @@ void Assignment2Stage::CreateLightBall()
 			selectedLight = name;
 
 		auto light = object->GetComponent<Light>();
-		light->SetType(LightType::Directional);
+		light->SetType(LightType::Point);
 		light->SetDirection({1,0,0});
 		light->SetInnerAngle(23.0f);
 		light->SetOuterAngle(27.5f);

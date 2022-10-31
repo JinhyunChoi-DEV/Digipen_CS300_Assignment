@@ -85,8 +85,8 @@ void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects)
 		auto light = objects[i]->GetComponent<Light>();
 
 		unsigned int type = static_cast<std::underlying_type<LightType>::type>(light->GetType());
-		float cutOff = light->GetInnerAngle();
-		float outerCutOff = light->GetOuterAngle();
+		float innerAngle = light->GetInnerAngle();
+		float outerAngle = light->GetOuterAngle();
 		float constant = light->GetConstant();
 		float linear = light->GetLinear();
 		float quadratic = light->GetQuadratic();
@@ -104,9 +104,9 @@ void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects)
 		offset += 16;
 		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(light->GetSpecularIntensity()));
 		offset += 12;
-		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &cutOff);
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &innerAngle);
 		offset += 4;
-		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &outerCutOff);
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &outerAngle);
 		offset += 4;
 		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &constant);
 		offset += 4;

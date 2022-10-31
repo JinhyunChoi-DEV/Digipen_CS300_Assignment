@@ -24,9 +24,9 @@ struct Light
 	vec3 diffuse;		// 64
 
 	vec3 specular;		// 80
-	float cutOff;		// 92
+	float innerAngle;	// 92
 
-	float outerCutOff;	// 96
+	float outerAngle;	// 96
 	float constant;		// 100
 	float linear;		// 104
 	float quadratic;	// 108
@@ -35,8 +35,8 @@ struct Light
 	/* 
 	Total = type(16) + position(16) + 
 	direction(16) + ambient(16) + diffuse(16) +
-	specular(12) + cutoff(4) + 
-	outerCutOff(4) + constant(4) + linear(4) + quadratic(4) +
+	specular(12) + innerAngle(4) + 
+	outerAngle(4) + constant(4) + linear(4) + quadratic(4) +
 	fallOut(16) = 128
 	*/
 };
@@ -154,8 +154,8 @@ vec3 getColorResult(in vec3 ambient, in vec3 diffuse, in vec3 specular, in vec3 
 		vec3 lightDir= normalize(light.direction);
 		vec3 vertextoLightDir = normalize(objectPos - light.position);
 		float angle = dot(lightDir, vertextoLightDir);
-		float phi = cos(radians(light.outerCutOff));
-		float theta = cos(radians(light.cutOff));
+		float phi = cos(radians(light.outerAngle));
+		float theta = cos(radians(light.innerAngle));
 		float distance = length(light.position - objectPos);
 		float att = min(1.0/(light.constant + light.linear * distance + light.quadratic * (distance*distance)), 1.0);
 
