@@ -15,10 +15,13 @@ End Header --------------------------------------------------------*/
 #include "Graphic.hpp"
 #include "MeshManager.hpp"
 #include "Shader.hpp"
+#include "UVGenerator.hpp"
 
-Mesh::Mesh(std::string name, std::vector<glm::vec3> vertices, std::vector<glm::vec3> vertexNormals,
-           std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices, DrawType type)
-		: name(name), positions(vertices), vertexNormals(vertexNormals), faceNormal(faceNormal), indices(indices), objectColor(glm::vec3(0.8, 0.8, 0.8)), type(type)
+Mesh::Mesh(std::string name, 
+	std::vector<glm::vec3> positions, std::vector<glm::vec3> vertexNormal, std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices,
+	glm::vec3 minVertex, glm::vec3 maxVertex, DrawType type)
+	: name(name), positions(positions), vertexNormals(vertexNormal), faceNormal(faceNormal),
+	indices(indices), minVertex(minVertex), maxVertex(maxVertex), objectColor(glm::vec3(0.8, 0.8, 0.8)), type(type)
 {
 	shader = GRAPHIC->GetShader("PhongShading");
 
@@ -26,6 +29,7 @@ Mesh::Mesh(std::string name, std::vector<glm::vec3> vertices, std::vector<glm::v
 	{
 		CreateVertexNormalLines();
 		CreateFaceNormalLines();
+		CreateTextureCoordinates();
 	}
 }
 
@@ -117,5 +121,24 @@ void Mesh::CreateFaceNormalLines()
 		auto v2 = v1 + (faceNormal[i / 3] * 0.15f);
 
 		faceNormalLines.insert(faceNormalLines.end(), { v1, v2});
+	}
+}
+
+void Mesh::CreateTextureCoordinates()
+{
+	for(auto position : positions)
+	{
+		planarTextureCoordinate.push_back(GeneratePlanarUV(position, minVertex, maxVertex));
+		cylindricalTextureCoordinate.push_back(GenerateCylindricalUV(position, minVertex, maxVertex));
+		sphericalTextureCoordinate.push_back(GenerateSphericalUV(position));
+		cubeTextureCoordinate.push_back(GenerateCubeUV(position));
+	}
+
+	for(auto vertexNormal : vertexNormals)
+	{
+		planarTextureCoordinateWithVertexNormal.push_back(GeneratePlanarUV(vertexNormal, minVertex, maxVertex));
+		cylindricalTextureCoordinateWithVertexNormal.push_back(GenerateCylindricalUV(vertexNormal, minVertex, maxVertex));
+		sphericalTextureCoordinateWithVertexNormal.push_back(GenerateSphericalUV(vertexNormal));
+		cubeTextureCoordinateWithVertexNormal.push_back(GenerateCubeUV(vertexNormal));
 	}
 }

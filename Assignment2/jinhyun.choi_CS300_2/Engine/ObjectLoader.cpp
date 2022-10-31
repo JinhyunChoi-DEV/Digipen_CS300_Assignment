@@ -19,19 +19,11 @@ End Header --------------------------------------------------------*/
 #include <algorithm>
 #include <numeric>
 
-#include "ObjectManager.hpp"
 #include "ObjectLoader.hpp"
 #include "Object.hpp"
 #include "VertexHelper.hpp"
 #include "Mesh.hpp"
 #include "MeshManager.hpp"
-
-namespace 
-{
-	void CreateObject(std::string name, std::vector<glm::vec3> positions, std::vector<glm::vec3> vertexNormal,
-		std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices);
-}
-
 
 bool ObjectLoader::Load(const char* fileName, std::string name)
 {
@@ -139,31 +131,9 @@ bool ObjectLoader::Load(const char* fileName, std::string name)
 		vertexNormal[index] = normalize(sumNormals);
 	}
 
-	Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, DrawType::ObjectModel);
+	Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, min, max, DrawType::ObjectModel);
 	mesh->SetMultipleFaceIndex(isMultipleIndex);
 	MESHES->Add(name, mesh);
 
 	return true;
-}
-
-bool ObjectLoader::LoadAndCreate(const char* fileName, std::string name)
-{
-	Load(fileName, name);
-	CreateObject(name, positions, vertexNormal, faceNormal, indices);
-
-	return true;
-}
-
-namespace 
-{
-	void CreateObject(std::string name, std::vector<glm::vec3> positions, std::vector<glm::vec3> vertexNormal,
-		std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices)
-	{
-		Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, DrawType::ObjectModel);
-
-		Object* object = new Object(name);
-		object->AddComponent(mesh);
-		OBJECTMANAGER->Add(name, object);
-		MESHES->Add(name, mesh);
-	}
 }

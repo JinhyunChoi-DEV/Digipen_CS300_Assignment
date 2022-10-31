@@ -32,7 +32,7 @@ inline std::vector<glm::vec3> TranslateToOrigin(glm::vec3 sumAllVertex, std::vec
 	return result;
 }
 
-inline std::vector<glm::vec3> ScaleToRange(glm::vec3 min, glm::vec3 max, std::vector<glm::vec3> vertices)
+inline std::vector<glm::vec3> ScaleToRange(glm::vec3& min, glm::vec3& max, std::vector<glm::vec3> vertices)
 {
 	std::vector<glm::vec3> result;
 	result.reserve(vertices.size());
@@ -47,6 +47,8 @@ inline std::vector<glm::vec3> ScaleToRange(glm::vec3 min, glm::vec3 max, std::ve
 		float z = vertex.z * factor;
 		result.emplace_back(x, y, z);
 	}
+	min = min * factor;
+	max = max * factor;
 
 	return result;
 }

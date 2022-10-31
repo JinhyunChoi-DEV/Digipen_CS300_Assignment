@@ -1,14 +1,14 @@
 #pragma once
 #include <glm/glm.hpp>
 
-glm::vec2 GeneratePlanarUV(glm::vec3 vertex, glm::vec3 max, glm::vec3 min)
+inline glm::vec2 GeneratePlanarUV(glm::vec3 vertex, glm::vec3 min, glm::vec3 max)
 {
 	float u = (vertex.x - min.x) / (max.x - min.x);
 	float v = (vertex.y - min.y) / (max.y - min.y);
 	return glm::vec2(u, v);
 }
 
-glm::vec2 GenerateCylindricalUV(glm::vec3 vertex, glm::vec3 max, glm::vec3 min)
+inline glm::vec2 GenerateCylindricalUV(glm::vec3 vertex, glm::vec3 min, glm::vec3 max)
 {
 	float x = vertex.x;
 	float y = vertex.y;
@@ -22,7 +22,7 @@ glm::vec2 GenerateCylindricalUV(glm::vec3 vertex, glm::vec3 max, glm::vec3 min)
 	return glm::vec2(u, v);
 }
 
-glm::vec2 GenerateSphericalUV(glm::vec3 vertex)
+inline glm::vec2 GenerateSphericalUV(glm::vec3 vertex)
 {
 	float x = vertex.x;
 	float y = vertex.y;
@@ -38,7 +38,7 @@ glm::vec2 GenerateSphericalUV(glm::vec3 vertex)
 	return glm::vec2(u, v);
 }
 
-glm::vec2 GenerateCubeUV(glm::vec3 vertex)
+inline glm::vec2 GenerateCubeUV(glm::vec3 vertex)
 {
 	glm::vec3 absVector = abs(vertex);
 	float u = 0.0f;

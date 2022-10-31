@@ -18,7 +18,6 @@ class ObjectLoader
 public:
 	ObjectLoader() = default;
 	bool Load(const char* fileName, std::string name);
-	bool LoadAndCreate(const char* fileName, std::string name);
 
 	const char* GetObjFileDir() const { return objFilePath; }
 

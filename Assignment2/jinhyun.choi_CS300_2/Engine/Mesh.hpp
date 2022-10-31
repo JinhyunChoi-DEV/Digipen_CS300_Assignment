@@ -26,17 +26,6 @@ enum class DrawType
 	Light
 };
 
-struct ObjectVertex
-{
-	glm::vec3 position;
-	glm::vec3 normal;
-};
-
-struct LineVertex
-{
-	glm::vec3 position;
-};
-
 class Shader;
 
 class Mesh : public Component
@@ -44,7 +33,8 @@ class Mesh : public Component
 public:
 	Mesh() = default;
 	Mesh(std::string name, std::vector<glm::vec3> positions, std::vector<glm::vec3> vertexNormal,
-		std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices, DrawType type);
+		std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices, 
+		glm::vec3 minVertex, glm::vec3 maxVertex, DrawType type);
 	Mesh(std::string name, std::vector<glm::vec3> positions, DrawType type);
 	Mesh(const Mesh* mesh);
 
@@ -71,6 +61,7 @@ public:
 private:
 	void CreateVertexNormalLines();
 	void CreateFaceNormalLines();
+	void CreateTextureCoordinates();
 
 	bool isMultipleFaceIndex = false;
 	std::string name;
@@ -80,7 +71,21 @@ private:
 	std::vector<glm::vec3> faceNormal;
 	std::vector<glm::vec3> vertexNormalLines;
 	std::vector<glm::vec3> faceNormalLines;
+
+	std::vector<glm::vec2> planarTextureCoordinate;
+	std::vector<glm::vec2> cylindricalTextureCoordinate;
+	std::vector<glm::vec2> sphericalTextureCoordinate;
+	std::vector<glm::vec2> cubeTextureCoordinate;
+
+	std::vector<glm::vec2> planarTextureCoordinateWithVertexNormal;
+	std::vector<glm::vec2> cylindricalTextureCoordinateWithVertexNormal;
+	std::vector<glm::vec2> sphericalTextureCoordinateWithVertexNormal;
+	std::vector<glm::vec2> cubeTextureCoordinateWithVertexNormal;
+
 	std::vector<unsigned int> indices;
+	glm::vec3 minVertex;
+	glm::vec3 maxVertex;
 	glm::vec3 objectColor;
+
 	DrawType type;
 };
