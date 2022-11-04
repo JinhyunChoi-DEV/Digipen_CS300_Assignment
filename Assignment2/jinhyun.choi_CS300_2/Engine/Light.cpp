@@ -4,8 +4,7 @@
 
 Light::Light() : direction(0),
                  ambient(1.0f, 1.0f, 1.0f), diffuse(1.0f, 1.0f, 1.0f), specular(1.0f, 1.0f, 1.0f),
-                 type(LightType::Directional), innerAngle(0.0f), outerAngle(0.0f),
-                 constant(1.0f), linear(0.22f), quadratic(0.2f), fallOut(1.0f)
+                 type(LightType::Directional), innerAngle(0.0f), outerAngle(0.0f), fallOut(1.0f)
 { }
 
 void Light::Initialize()
@@ -52,20 +51,20 @@ void Light::SetOuterAngle(float outerAngle)
 	this->outerAngle = outerAngle;
 }
 
-void Light::SetConstant(float constant)
-{
-	this->constant = constant;
-}
-
-void Light::SetLinear(float linear)
-{
-	this->linear = linear;
-}
-
-void Light::SetQuadratic(float quadratic)
-{
-	this->quadratic = quadratic;
-}
+//void Light::SetConstant(float constant)
+//{
+//	this->constant = constant;
+//}
+//
+//void Light::SetLinear(float linear)
+//{
+//	this->linear = linear;
+//}
+//
+//void Light::SetQuadratic(float quadratic)
+//{
+//	this->quadratic = quadratic;
+//}
 
 void Light::SetFallOut(float fallOut)
 {

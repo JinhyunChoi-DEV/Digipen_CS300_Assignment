@@ -23,9 +23,11 @@ public:
 	void SetType(LightType type);
 	void SetInnerAngle(float innerAngle);
 	void SetOuterAngle(float outerAngle);
+	/*
 	void SetConstant(float constant);
 	void SetLinear(float linear);
 	void SetQuadratic(float quadratic);
+	*/
 	void SetFallOut(float fallOut);
 	void SetColor(glm::vec3 color);
 
@@ -36,9 +38,9 @@ public:
 	LightType GetType() const { return type; }
 	float GetInnerAngle() const { return innerAngle; }
 	float GetOuterAngle() const { return outerAngle; }
-	float GetConstant() const { return constant; }
+	/*float GetConstant() const { return constant; }
 	float GetLinear() const { return linear; }
-	float GetQuadratic() const { return quadratic; }
+	float GetQuadratic() const { return quadratic; }*/
 	float GetFallOut() const { return fallOut; }
 
 private:
@@ -52,9 +54,9 @@ private:
 	float innerAngle;
 	float outerAngle;
 
-	float constant;
+	/*float constant;
 	float linear;
-	float quadratic;
+	float quadratic;*/
 
 	float fallOut;
 };

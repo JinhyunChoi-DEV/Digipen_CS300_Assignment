@@ -27,6 +27,7 @@ public:
 
 	void Use();
 	void Set(const std::string& name, int value) const;
+	void Set(const std::string& name, unsigned int value) const;
 	void Set(const std::string& name, bool value) const;
 	void Set(const std::string& name, float value) const;
 	void Set(const std::string& name, glm::vec3 value) const;

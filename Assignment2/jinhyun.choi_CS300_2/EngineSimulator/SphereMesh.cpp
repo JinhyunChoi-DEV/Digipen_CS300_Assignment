@@ -119,6 +119,6 @@ SphereMesh::SphereMesh(std::string name, float radius, int stack, int sector)
 		vnCollections[thirdIndex].push_back(normal);
 	}
 
-	mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, min, max, DrawType::Solid);
+	mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, DrawType::Solid);
 	mesh->SetShader("Solid");
 }

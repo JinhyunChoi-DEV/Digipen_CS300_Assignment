@@ -28,6 +28,8 @@ End Header --------------------------------------------------------*/
 #include "Light.hpp"
 #include "LightTypeHelper.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
+#include "TextureTypeHelper.hpp"
 
 Assignment2Stage::Assignment2Stage()
 {
@@ -42,16 +44,18 @@ Assignment2Stage::Assignment2Stage()
 	drawFace = false;
 	pauseRotation = false;
 	activeLightCount = 1;
+	visualizeUV = false;
 	pi = glm::pi<float>();
 
+	ppmFileReader->Read("metal_roof_diff_512x512.ppm");
+	ppmFileReader->Read("metal_roof_spec_512x512.ppm");
+	ppmFileReader->Read("grid.ppm");
 	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
-	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "Light.glsl", "TransformModel.glsl", nullptr);
-	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "Light.glsl", "TransformModel.glsl", nullptr);
-	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "Light.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
+	//GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
+	//GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", "TransformModel.glsl", nullptr);
 
-	ppmFileReader->Read("Metal_Roof_Diff", "metal_roof_diff_512x512.ppm");
-	ppmFileReader->Read("Metal_Roof_Spec", "metal_roof_spec_512x512.ppm");
 	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongShading", "PhongLighting" , "BlinnShading"});
 }
 
@@ -127,17 +131,20 @@ void Assignment2Stage::UpdateCamera(float dt)
 void Assignment2Stage::UpdateLightBall(float dt)
 {
 	rotationTime += dt;
-	float step = 2 * pi / lightBalls.size();
-	for (unsigned i = 0; i < lightBalls.size(); ++i)
+	auto lights = OBJECTMANAGER->GetLights();
+	float step = 2 * pi / lights.size();
+	auto scale = orbitScale;
+
+	for (unsigned i = 0; i < lights.size(); ++i)
 	{
 		float additionAngle = step * i;
-		auto transform = lightBalls[i]->GetComponent<Transform>();
-		float x = 5 * cosf(rotationTime + additionAngle);
+		auto transform = lights[i]->GetComponent<Transform>();
+		float x = scale.x * cosf(rotationTime + additionAngle);
 		float y = 0;
-		float z = 5 * sinf(rotationTime + additionAngle);
+		float z = scale.y * sinf(rotationTime + additionAngle);
 		transform->SetTranslate({ x, y , z });
 
-		auto light = lightBalls[i]->GetComponent<Light>();
+		auto light = lights[i]->GetComponent<Light>();
 		auto mainTransform = mainObject->GetComponent<Transform>();
 
 		auto newDir = mainTransform->GetPosition() - transform->GetPosition();
@@ -165,21 +172,30 @@ void Assignment2Stage::CreateOrbit()
 	orbit->AddComponent(meshOrbit);
 	orbit->AddComponent(new Transform());
 	orbit->GetComponent<Transform>()->SetTranslate(glm::vec3{ 0, 0, 0 });
-	orbit->GetComponent<Transform>()->SetScale(glm::vec3{ 5, 5, 5 });
+	orbit->GetComponent<Transform>()->SetScale(glm::vec3{ 5, 5, 5});
 	orbitScale = orbit->GetComponent<Transform>()->GetScale();
 	OBJECTMANAGER->Add("orbit", orbit);
 }
 
 void Assignment2Stage::CreateObject()
 {
+	auto texture = new Texture();
+	texture->SetMappingType(TextureMappingType::Cube);
+	texture->SetDiffuse("metal_roof_diff_512x512.ppm");
+	texture->SetSpecular("metal_roof_spec_512x512.ppm");
+	texture->SetAmbientColor({ 0,0,0 });
+	texture->SetDiffuseColor({ 1,1,1 });
+	texture->SetSpecularColor({ 1,1,1 });
+
 	auto main = new Object("MainObject");
 	main->AddComponent(new Mesh(MESHES->GetMesh(loadFiles[0])));
 	main->AddComponent(new Transform);
+	main->AddComponent(texture);
 	OBJECTMANAGER->Add("MainObject", main);
 	mainObject = main;
 	selectedObject = loadFiles[0];
 	mainObject->GetComponent<Transform>()->SetTranslate(glm::vec3(0));
-	mainObject->GetComponent<Transform>()->SetScale(glm::vec3(1));
+	mainObject->GetComponent<Transform>()->SetScale(glm::vec3(1.5));
 
 	auto floor = new Object("FloorObject");
 	floor->AddComponent(new Mesh(MESHES->GetMesh("quad")));
@@ -187,7 +203,7 @@ void Assignment2Stage::CreateObject()
 	floor->GetComponent<Mesh>()->SetColor(glm::vec3(0.5, 0.5, 0));
 	OBJECTMANAGER->Add("FloorObject", floor);
 	floorObject = floor;
-	floorObject->GetComponent<Transform>()->SetTranslate(glm::vec3(0, -1, 0));
+	floorObject->GetComponent<Transform>()->SetTranslate(glm::vec3(0, -1.5, 0));
 	floorObject->GetComponent<Transform>()->SetScale(glm::vec3(10));
 	floorObject->GetComponent<Transform>()->SetRotation(-90, X);
 }
@@ -242,6 +258,8 @@ void Assignment2Stage::UpdateGUI()
 	NormalDrawGUI();
 	ReloadShaderGUI();
 	LightingBallGUI();
+	MaterialGUI();
+	GlobalLightGUI();
 }
 
 void Assignment2Stage::ModelsGUI()
@@ -436,6 +454,7 @@ void Assignment2Stage::LightingBallGUI()
 			{
 				auto innerAngle = light->GetInnerAngle();
 				auto outerAngle = light->GetOuterAngle();
+				auto fallout = light->GetFallOut();
 
 				if(ImGui::SliderFloat("Inner Angle", &innerAngle, 0, 90))
 				{
@@ -448,6 +467,11 @@ void Assignment2Stage::LightingBallGUI()
 					light->SetOuterAngle(outerAngle);
 					if (innerAngle > outerAngle)
 						light->SetInnerAngle(outerAngle);
+				}
+
+				if (ImGui::SliderFloat("Fallout", &fallout, 1, 30))
+				{
+					light->SetFallOut(fallout);
 				}
 			}
 
@@ -467,6 +491,128 @@ void Assignment2Stage::SetActiveLightBalls(int count)
 			lightBalls[i]->SetActive(true);
 	}
 	selectedLight = lightBalls[0]->GetName();
+}
+
+void Assignment2Stage::MaterialGUI()
+{
+	if (ImGui::CollapsingHeader("Material Control"))
+	{
+		auto texture = mainObject->GetComponent<Texture>();
+		auto entityType = texture->GetEntityType();
+		auto mappingType = texture->GetMappingType();
+		auto isGPU = texture->IsGPUMode();
+
+		// Color
+		auto color = texture->GetAmbientColor();
+		if (ImGui::ColorEdit3("Ambient", &color[0]))
+		{
+			texture->SetAmbientColor(color);
+		}
+
+		color = texture->GetDiffuseColor();
+		if (ImGui::ColorEdit3("Diffuse", &color[0]))
+		{
+			texture->SetDiffuseColor(color);
+		}
+
+		color = texture->GetSpecularColor();
+		if (ImGui::ColorEdit3("Specular", &color[0]))
+		{
+			texture->SetSpecularColor(color);
+		}
+
+		color = texture->GetEmissiveColor();
+		if (ImGui::ColorEdit3("Emissive", &color[0]))
+		{
+			texture->SetEmissiveColor(color);
+		}
+
+		auto mappingPreview = GetTextureMappingTypeString(mappingType);
+		if(ImGui::BeginCombo("Texture Mode", mappingPreview.c_str()))
+		{
+			auto types = GetTextureMappingTypesString();
+			for(int i =0; i<types.size(); ++i)
+			{
+				bool isSelected = mappingPreview == types[i];
+				if(ImGui::Selectable(types[i].c_str(), isSelected))
+				{
+					auto type = GetTextureMappingFromString(types[i]);
+					texture->SetMappingType(type);
+					GRAPHIC->RebindTexture(mainObject);
+				}
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+
+		if(ImGui::Checkbox("Visualize UV", &visualizeUV))
+		{
+			if(visualizeUV)
+			{
+				texture->SetDiffuse("grid.ppm");
+				texture->SetSpecular("grid.ppm");
+			}
+			else
+			{
+				texture->SetDiffuse("metal_roof_diff_512x512.ppm");
+				texture->SetSpecular("metal_roof_spec_512x512.ppm");
+			}
+		}
+
+		if (ImGui::Checkbox("GPU Mode", &isGPU))
+		{
+			texture->SetUseGPU(isGPU);
+		}
+
+		auto entityPreview = GetTextureEntityTypeString(entityType);
+		if (ImGui::BeginCombo("Texture Entity", entityPreview.c_str()))
+		{
+			auto types = GetTextureEntityTypesString();
+			for (int i = 0; i < types.size(); ++i)
+			{
+				bool isSelected = entityPreview == types[i];
+				if (ImGui::Selectable(types[i].c_str(), isSelected))
+				{
+					auto type = GetTextureEntityTypeFromString(types[i]);
+					texture->SetEntityType(type);
+					GRAPHIC->RebindTexture(mainObject);
+				}
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+	}
+}
+
+void Assignment2Stage::GlobalLightGUI()
+{
+	if (ImGui::CollapsingHeader("Global Constant Control"))
+	{
+		auto attenuation = GRAPHIC->GetAttenuation();
+		auto globalAmbient = GRAPHIC->GetGlobalAmbient();
+		auto fog = GRAPHIC->GetFogColor();
+		auto near = GRAPHIC->GetFogMin();
+		auto far = GRAPHIC->GetFogMax();
+
+		ImGui::DragFloat3("Attenuation Constant", &attenuation[0], 0.01f, 0.0f, 2.0f);
+		ImGui::ColorEdit3("Global Ambient", &globalAmbient[0]);
+		ImGui::ColorEdit3("Fog Color", &fog[0]);
+		ImGui::DragFloat("Fog Min", &near, 0.1f, 0.1f, 20.0f);
+		ImGui::DragFloat("Fog Max", &far, 0.1f, 0.1f, 50.0f);
+
+		if (near > far)
+			near = far;
+		if (far < near)
+			far = near;
+
+		GRAPHIC->SetGlobalLightInfo(attenuation, globalAmbient, fog, near, far);
+	}
 }
 
 void Assignment2Stage::SetScenario1(int count, glm::vec3 color)

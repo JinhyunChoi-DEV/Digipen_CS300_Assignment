@@ -14,7 +14,6 @@ End Header --------------------------------------------------------*/
 #pragma once
 #include <unordered_map>
 #include "Mesh.hpp"
-#include "UniformBlockObjectManager.hpp"
 
 class VertexObjectManager
 {
@@ -22,6 +21,8 @@ public:
 	unsigned int GetObjectVAO(const Mesh* mesh);
 	unsigned int GetVertexNormalVAO(const Mesh* mesh);
 	unsigned int GetFaceNormalVAO(const Mesh* mesh);
+
+	void RebindTexture(const Mesh* mesh, const Texture* texture);
 
 private:
 	void GenerateObject(std::string name, const Mesh* mesh);

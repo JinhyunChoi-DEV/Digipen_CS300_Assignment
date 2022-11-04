@@ -58,6 +58,9 @@
     <Filter Include="Engine\Graphics\Texture">
       <UniqueIdentifier>{b4b45c0a-d1d9-4ead-b246-f8e11635845f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Graphics\Texture\PPM">
+      <UniqueIdentifier>{bc40e7f5-7373-4e77-8644-e21496d1b3d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.hpp">
@@ -156,13 +159,19 @@
     <ClInclude Include="LightTypeHelper.hpp">
       <Filter>Engine\Light</Filter>
     </ClInclude>
-    <ClInclude Include="PPMFileReader.hpp">
+    <ClInclude Include="UVGenerator.hpp">
+      <Filter>Engine\Graphics\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.hpp">
       <Filter>Engine\Graphics\Texture</Filter>
     </ClInclude>
     <ClInclude Include="PPM.hpp">
-      <Filter>Engine\Graphics\Texture</Filter>
+      <Filter>Engine\Graphics\Texture\PPM</Filter>
     </ClInclude>
-    <ClInclude Include="UVGenerator.hpp">
+    <ClInclude Include="PPMFileReader.hpp">
+      <Filter>Engine\Graphics\Texture\PPM</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureTypeHelper.hpp">
       <Filter>Engine\Graphics\Texture</Filter>
     </ClInclude>
   </ItemGroup>
@@ -245,10 +254,13 @@
     <ClCompile Include="Light.cpp">
       <Filter>Engine\Light</Filter>
     </ClCompile>
-    <ClCompile Include="PPMFileReader.cpp">
-      <Filter>Engine\Graphics\Texture</Filter>
-    </ClCompile>
     <ClCompile Include="PPM.cpp">
+      <Filter>Engine\Graphics\Texture\PPM</Filter>
+    </ClCompile>
+    <ClCompile Include="PPMFileReader.cpp">
+      <Filter>Engine\Graphics\Texture\PPM</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
       <Filter>Engine\Graphics\Texture</Filter>
     </ClCompile>
   </ItemGroup>

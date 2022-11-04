@@ -1,12 +1,12 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <glad/glad.h>
 
 #include "PPM.hpp"
 
-void PPM::Read(std::string name, std::string path)
+void PPM::Read(std::string path)
 {
-	this->name = name;
 	this->path = path;
 
 	std::ifstream file(path, std::ifstream::binary);
@@ -34,8 +34,8 @@ void PPM::Read(std::string name, std::string path)
 	}
 
 	file >> width >> height >> maxValue;
-	auto size = width * height * 3;
-	buffer = new float[size]; // 3 -> r,g,b
+	auto size = width * height * 3;  // 3 -> r,g,b
+	buffer = new float[size];
 
 	if (mMagic != "P3")
 		return;
@@ -46,4 +46,13 @@ void PPM::Read(std::string name, std::string path)
 		file >> value;
 		buffer[i] = value / (float)maxValue;
 	}
+
+	glGenTextures(1, &bufferObject);
+	glBindTexture(GL_TEXTURE_2D, bufferObject);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, buffer);
+	glGenerateMipmap(GL_TEXTURE_2D);
 }

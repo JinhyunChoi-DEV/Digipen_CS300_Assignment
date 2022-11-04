@@ -1,8 +1,7 @@
 #pragma once
 #include <glfw/glfw3.h>
-
 #include "Camera.hpp"
-#include "Light.hpp"
+#include "Mesh.hpp"
 #include "Shader.hpp"
 #include "Transform.hpp"
 
@@ -24,9 +23,9 @@ class UniformBlockObjectManager
 public:
 	void InitializeTransform();
 	void InitializeLight();
-	void BindTransformData(const Transform* model, const Camera* camera);
-	void BindLightData(std::vector<Object* > objects);
 
+	void BindTransformData(const Transform* model, const Camera* camera);
+	void BindLightData(std::vector<Object* > objects, glm::vec3 attenuationConstants, glm::vec3 globalAmbient, glm::vec3 fog, float fogMin, float fogMax);
 private:
 	std::unordered_map<UniformBufferType, UniformBufferData> uniformBuffers;
 

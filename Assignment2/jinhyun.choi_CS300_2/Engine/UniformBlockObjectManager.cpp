@@ -1,12 +1,11 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
-
-#include "UniformBlockObjectManager.hpp"
-
 #include <iostream>
 
+#include "UniformBlockObjectManager.hpp"
 #include "Graphic.hpp"
+#include "Light.hpp"
 #include "Object.hpp"
 #include "ObjectManager.hpp"
 
@@ -29,10 +28,34 @@ void UniformBlockObjectManager::InitializeTransform()
 
 void UniformBlockObjectManager::InitializeLight()
 {
+	/*auto shader = GRAPHIC->GetShader("PhongShading");
+	GLuint uboIndex;
+	uboIndex = glGetUniformBlockIndex(shader->ProgramID, "TEST");
+
+	GLint uboSize;
+	glGetActiveUniformBlockiv(shader->ProgramID, uboIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &uboSize);
+
+	const GLchar* names[] = {
+		"TEST.type",
+		"TEST.t_position",
+		"TEST.direction",
+		"TEST.ambient",
+		"TEST.diffuse",
+		"TEST.specular",
+		"TEST.innerAngle",
+		"TEST.outerAngle",
+		"TEST.fallOut"
+	};
+
+	GLuint indices[9];
+	GLint offset[9];
+	glGetUniformIndices(shader->ProgramID, 9, names, indices);
+	glGetActiveUniformsiv(shader->ProgramID, 9, indices, GL_UNIFORM_OFFSET, offset);*/
+
 	UniformBufferData data;
 	data.index = lightIndex;
 	// Light.glsl
-	data.size = 128 * lightMaxCount + 16;
+	data.size = 112 * lightMaxCount + 64;
 
 	glGenBuffers(1, &data.UBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, data.UBO);
@@ -64,7 +87,7 @@ void UniformBlockObjectManager::BindTransformData(const Transform* model, const 
 }
 
 
-void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects)
+void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects, glm::vec3 attenuationConstants, glm::vec3 globalAmbient, glm::vec3 fog, float fogMin, float fogMax)
 {
 	int activeCount = objects.size();
 
@@ -77,6 +100,16 @@ void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects)
 
 	GLint offset = 0;
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(unsigned int), &activeCount);
+	offset += 4;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &fogMin);
+	offset += 4;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &fogMax);
+	offset += 8;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(attenuationConstants));
+	offset += 16;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(globalAmbient));
+	offset += 16;
+	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(fog));
 	offset += 16;
 
 	for(int i = 0; i<activeCount; ++i)
@@ -87,9 +120,6 @@ void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects)
 		unsigned int type = static_cast<std::underlying_type<LightType>::type>(light->GetType());
 		float innerAngle = light->GetInnerAngle();
 		float outerAngle = light->GetOuterAngle();
-		float constant = light->GetConstant();
-		float linear = light->GetLinear();
-		float quadratic = light->GetQuadratic();
 		float fallOut = light->GetFallOut();
 
 		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(unsigned int), &type);
@@ -108,14 +138,8 @@ void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects)
 		offset += 4;
 		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &outerAngle);
 		offset += 4;
-		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &constant);
-		offset += 4;
-		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &linear);
-		offset += 4;
-		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &quadratic);
-		offset += 4;
 		glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float), &fallOut);
-		offset += 16;
+		offset += 12;
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);

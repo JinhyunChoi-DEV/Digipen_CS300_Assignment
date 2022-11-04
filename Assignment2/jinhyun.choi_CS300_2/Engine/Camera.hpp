@@ -48,6 +48,8 @@ public:
 	glm::mat4 GetProjection() const;
 	glm::vec3 GetLook() const;
 	glm::vec3 GetPosition() const;
+	float GetNear() const { return near; }
+	float GetFar() const { return far; }
 
 	void SetOriginData(CameraOriginData data);
 	void SetFOV(float fov);

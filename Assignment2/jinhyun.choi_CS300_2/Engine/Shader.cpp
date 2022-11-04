@@ -85,6 +85,19 @@ void Shader::Set(const std::string& name, int value) const
 	glUniform1i(location, value);
 }
 
+void Shader::Set(const std::string& name, unsigned int value) const
+{
+	const GLint location = glGetUniformLocation(ProgramID, name.c_str());
+
+	if (location < 0)
+	{
+		std::cout << "Error-Shader: Fail To Get UniformLocation - " << Name << "=> " << name << std::endl;
+		return;
+	}
+
+	glUniform1ui(location, value);
+}
+
 void Shader::Set(const std::string& name, float value) const
 {
 	const GLint location = glGetUniformLocation(ProgramID, name.c_str());
@@ -159,6 +172,11 @@ namespace
 
 		glShaderSource(shader, totalSize, codes, nullptr);
 
+		for(int i = 0; i<totalSize; ++i)
+		{
+			std::cout << codes[i] << std::endl;
+		}
+
 		glCompileShader(shader);
 
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_result);
@@ -199,7 +217,7 @@ namespace
 		if (link_result == GL_FALSE)
 		{
 			GLint log_length = 0;
-			glGetProgramiv(program, GL_LINK_STATUS, &log_length);
+			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
 
 			GLchar* log_message = new GLchar[log_length];
 			glGetProgramInfoLog(program, log_length, nullptr, log_message);

@@ -35,7 +35,7 @@ public:
 private:
 	std::pair<ShaderType, std::string> GetShaderCodeWithFile(const char* filePath) const;
 	std::string commonFile = "LightingFunctions.glsl";
-	std::string shaderFilePath = "../Engine/ShaderFiles/";
+	std::string shaderFilePath = "../ShaderFiles/";
 	std::unordered_map<std::string, Shader*> shaders;
 
 };

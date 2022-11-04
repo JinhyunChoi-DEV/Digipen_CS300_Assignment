@@ -17,13 +17,11 @@ End Header --------------------------------------------------------*/
 #include <vector>
 
 #include "Component.hpp"
+#include "Texture.hpp"
 
 enum class DrawType
 {
-	Line,
-	Solid,
-	ObjectModel,
-	Light
+	Line, Solid, ObjectModel, Light
 };
 
 class Shader;
@@ -33,8 +31,7 @@ class Mesh : public Component
 public:
 	Mesh() = default;
 	Mesh(std::string name, std::vector<glm::vec3> positions, std::vector<glm::vec3> vertexNormal,
-		std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices, 
-		glm::vec3 minVertex, glm::vec3 maxVertex, DrawType type);
+		std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices, DrawType type);
 	Mesh(std::string name, std::vector<glm::vec3> positions, DrawType type);
 	Mesh(const Mesh* mesh);
 
@@ -57,11 +54,18 @@ public:
 	std::vector<glm::vec3> GetVertexNormalLines() const { return vertexNormalLines; }
 	std::vector<glm::vec3> GetFaceNormalLines() const { return faceNormalLines; }
 	glm::vec3 GetColor() const { return objectColor; }
+	std::vector<glm::vec2> GetTextureCoordinateWithPosition(TextureMappingType type) const;
+	std::vector<glm::vec2> GetTextureCoordinateWithVertexNormal(TextureMappingType type) const;
+	glm::vec3 GetMinVertex() const { return minVertex; }
+	glm::vec3 GetMaxVertex() const { return maxVertex; }
+	glm::vec3 GetMinVertexNormal() const { return minVertexNormal; }
+	glm::vec3 GetMaxVertexNormal() const { return maxVertexNormal; }
 
 private:
 	void CreateVertexNormalLines();
 	void CreateFaceNormalLines();
 	void CreateTextureCoordinates();
+	void CreateMinMax();
 
 	bool isMultipleFaceIndex = false;
 	std::string name;
@@ -85,6 +89,8 @@ private:
 	std::vector<unsigned int> indices;
 	glm::vec3 minVertex;
 	glm::vec3 maxVertex;
+	glm::vec3 minVertexNormal;
+	glm::vec3 maxVertexNormal;
 	glm::vec3 objectColor;
 
 	DrawType type;

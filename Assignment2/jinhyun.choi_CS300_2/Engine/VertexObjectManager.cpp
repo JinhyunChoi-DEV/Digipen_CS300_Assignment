@@ -61,6 +61,52 @@ unsigned VertexObjectManager::GetFaceNormalVAO(const Mesh* mesh)
 	return vertexArrays[name];
 }
 
+void VertexObjectManager::RebindTexture(const Mesh* mesh, const Texture* texture)
+{
+	auto entityType = texture->GetEntityType();
+	auto mappingType = texture->GetMappingType();
+
+	auto name = mesh->GetName();
+	auto VAO = vertexArrays[name];
+	auto VBO = vertexBuffers[name];
+
+	const auto positions = mesh->GetPositions();
+	const auto vertexNormals = mesh->GetVertexNormals();
+	const auto indices = mesh->GetIndices();
+	std::vector<glm::vec2> baseTextureCoordinates;
+	if(entityType == TextureEntityType::VertexPosition)
+		baseTextureCoordinates = mesh->GetTextureCoordinateWithPosition(mappingType);
+	else if(entityType == TextureEntityType::VertexNormal)
+		baseTextureCoordinates = mesh->GetTextureCoordinateWithVertexNormal(mappingType);
+
+	const auto vec2DataSize = sizeof(glm::vec2);
+	const auto vec3DataSize = sizeof(glm::vec3);
+
+	const auto positionSize = positions.size();
+	const auto vertexNormalSize = vertexNormals.size();
+	const auto textureCoordinateSize = baseTextureCoordinates.size();
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, (positionSize * vec3DataSize + vertexNormalSize * vec3DataSize + textureCoordinateSize * vec2DataSize), nullptr, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, (vec3DataSize * positionSize), &positions[0]);
+	glBufferSubData(GL_ARRAY_BUFFER, (vec3DataSize * positionSize), (vec3DataSize * vertexNormalSize), &vertexNormals[0]);
+	glBufferSubData(GL_ARRAY_BUFFER, (vec3DataSize * positionSize + vertexNormalSize * vec3DataSize), (vec2DataSize * textureCoordinateSize), &baseTextureCoordinates[0]);
+
+	//position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(0);
+
+	//normal
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(positionSize * vec3DataSize));
+	glEnableVertexAttribArray(1);
+
+	//texture
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(vec2DataSize * positionSize + vertexNormalSize * vec3DataSize));
+	glEnableVertexAttribArray(2);
+
+	glBindVertexArray(0);
+}
+
 void VertexObjectManager::GenerateObject(std::string name, const Mesh* mesh)
 {
 	auto VAO = vertexArrays[name];
@@ -70,10 +116,14 @@ void VertexObjectManager::GenerateObject(std::string name, const Mesh* mesh)
 	const auto positions = mesh->GetPositions();
 	const auto vertexNormals = mesh->GetVertexNormals();
 	const auto indices = mesh->GetIndices();
+	const auto baseTextureCoordinates = mesh->GetTextureCoordinateWithPosition(TextureMappingType::Cube);
+
 	const auto positionSize = positions.size();
 	const auto vertexNormalSize = vertexNormals.size();
-	const auto totalSize = positionSize + vertexNormalSize;
-	const auto dataSize = sizeof(glm::vec3);
+	const auto textureCoordinateSize = baseTextureCoordinates.size();
+
+	const auto vec2DataSize = sizeof(glm::vec2);
+	const auto vec3DataSize = sizeof(glm::vec3);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -82,17 +132,22 @@ void VertexObjectManager::GenerateObject(std::string name, const Mesh* mesh)
 	glBindVertexArray(VAO);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, (totalSize * dataSize), nullptr, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, (dataSize * positionSize), &positions[0]);
-	glBufferSubData(GL_ARRAY_BUFFER, (dataSize * vertexNormalSize), (dataSize * vertexNormalSize), &vertexNormals[0]);
+	glBufferData(GL_ARRAY_BUFFER, (positionSize * vec3DataSize + vertexNormalSize * vec3DataSize + textureCoordinateSize * vec2DataSize), nullptr, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, (vec3DataSize * positionSize), &positions[0]);
+	glBufferSubData(GL_ARRAY_BUFFER, (vec3DataSize * positionSize), (vec3DataSize * vertexNormalSize), &vertexNormals[0]);
+	glBufferSubData(GL_ARRAY_BUFFER, (vec3DataSize * positionSize + vertexNormalSize * vec3DataSize), (vec2DataSize * textureCoordinateSize), &baseTextureCoordinates[0]);
 
 	//position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
 
 	//normal
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(positionSize * dataSize));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(positionSize * vec3DataSize));
 	glEnableVertexAttribArray(1);
+
+	//texture
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(vec3DataSize * positionSize + vertexNormalSize * vec3DataSize));
+	glEnableVertexAttribArray(2);
 
 	// ebo
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

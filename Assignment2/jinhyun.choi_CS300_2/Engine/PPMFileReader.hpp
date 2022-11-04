@@ -7,9 +7,15 @@
 class PPMFileReader
 {
 public:
-	void Read(std::string name, const char* fileName);
+	PPMFileReader();
+
+	bool IsExist(std::string file);
+	void Read(std::string fileName);
+	PPM Get(std::string file);
 
 private:
-	std::unordered_map<std::string, PPM*> ppmLists;
+	std::unordered_map<std::string, PPM> ppmLists;
 	std::string textureFilePath = "../Textures/";
 };
+
+extern PPMFileReader* PPMREADER;

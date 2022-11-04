@@ -1,10 +1,31 @@
 #include "PPMFileReader.hpp"
 
-void PPMFileReader::Read(std::string name, const char* fileName)
-{
-	std::string path = textureFilePath + std::string(fileName);
-	PPM* ppm = new PPM();
-	ppm->Read(name, path);
+PPMFileReader* PPMREADER = nullptr;
 
-	ppmLists.insert(std::make_pair(name, ppm));
+PPMFileReader::PPMFileReader()
+{
+	if(PPMREADER ==	nullptr)
+		PPMREADER = this;
+}
+
+bool PPMFileReader::IsExist(std::string file)
+{
+	return ppmLists.find(file) != ppmLists.end();
+}
+
+void PPMFileReader::Read(std::string fileName)
+{
+	if (IsExist(fileName))
+		return;
+
+	std::string path = textureFilePath + fileName;
+	PPM ppm;
+	ppm.Read(path);
+
+	ppmLists.insert(std::make_pair(fileName, ppm));
+}
+
+PPM PPMFileReader::Get(std::string file)
+{
+	return ppmLists[file];
 }

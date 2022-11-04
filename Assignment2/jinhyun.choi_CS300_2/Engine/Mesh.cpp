@@ -11,24 +11,26 @@ Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
 
+#include <algorithm>
 #include "Mesh.hpp"
 #include "Graphic.hpp"
 #include "MeshManager.hpp"
 #include "Shader.hpp"
 #include "UVGenerator.hpp"
+#include "VertexHelper.hpp"
 
-Mesh::Mesh(std::string name, 
-	std::vector<glm::vec3> positions, std::vector<glm::vec3> vertexNormal, std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices,
-	glm::vec3 minVertex, glm::vec3 maxVertex, DrawType type)
+Mesh::Mesh(std::string name, std::vector<glm::vec3> positions, std::vector<glm::vec3> vertexNormal, 
+	std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices,DrawType type)
 	: name(name), positions(positions), vertexNormals(vertexNormal), faceNormal(faceNormal),
-	indices(indices), minVertex(minVertex), maxVertex(maxVertex), objectColor(glm::vec3(0.8, 0.8, 0.8)), type(type)
+	indices(indices), objectColor(glm::vec3(0.8, 0.8, 0.8)), type(type)
 {
 	shader = GRAPHIC->GetShader("PhongShading");
 
-	if(type == DrawType::ObjectModel)
+	if(type != DrawType::Line)
 	{
 		CreateVertexNormalLines();
 		CreateFaceNormalLines();
+		CreateMinMax();
 		CreateTextureCoordinates();
 	}
 }
@@ -49,7 +51,19 @@ Mesh::Mesh(const Mesh* mesh)
 	faceNormal = mesh->GetFaceNormal();
 	vertexNormalLines = mesh->GetVertexNormalLines();
 	faceNormalLines = mesh->GetFaceNormalLines();
+	planarTextureCoordinate = mesh->GetTextureCoordinateWithPosition(TextureMappingType::Planar);
+	cylindricalTextureCoordinate = mesh->GetTextureCoordinateWithPosition(TextureMappingType::Cylindrical);
+	sphericalTextureCoordinate = mesh->GetTextureCoordinateWithPosition(TextureMappingType::Spherical);
+	cubeTextureCoordinate = mesh->GetTextureCoordinateWithPosition(TextureMappingType::Cube);
+	planarTextureCoordinateWithVertexNormal = mesh->GetTextureCoordinateWithVertexNormal(TextureMappingType::Planar);
+	cylindricalTextureCoordinateWithVertexNormal = mesh->GetTextureCoordinateWithVertexNormal(TextureMappingType::Cylindrical);
+	sphericalTextureCoordinateWithVertexNormal = mesh->GetTextureCoordinateWithVertexNormal(TextureMappingType::Spherical);
+	cubeTextureCoordinateWithVertexNormal = mesh->GetTextureCoordinateWithVertexNormal(TextureMappingType::Cube);
 	indices = mesh->GetIndices();
+	minVertex = mesh->GetMinVertex();
+	maxVertex = mesh->GetMaxVertex();
+	minVertexNormal = mesh->GetMinVertexNormal();
+	maxVertexNormal = mesh->GetMaxVertexNormal();
 	objectColor = mesh->GetColor();
 	type = mesh->GetType();
 }
@@ -89,6 +103,40 @@ void Mesh::SetColor(glm::vec3 color)
 void Mesh::SetDrawType(DrawType type)
 {
 	this->type = type;
+}
+
+std::vector<glm::vec2> Mesh::GetTextureCoordinateWithPosition(TextureMappingType type) const
+{
+	if (type == TextureMappingType::Planar)
+		return planarTextureCoordinate;
+
+	if (type == TextureMappingType::Cylindrical)
+		return cylindricalTextureCoordinate;
+
+	if (type == TextureMappingType::Spherical)
+		return sphericalTextureCoordinate;
+
+	if (type == TextureMappingType::Cube)
+		return cubeTextureCoordinate;
+
+	return std::vector<glm::vec2>();
+}
+
+std::vector<glm::vec2> Mesh::GetTextureCoordinateWithVertexNormal(TextureMappingType type) const
+{
+	if (type == TextureMappingType::Planar)
+		return planarTextureCoordinateWithVertexNormal;
+
+	if (type == TextureMappingType::Cylindrical)
+		return cylindricalTextureCoordinateWithVertexNormal;
+
+	if (type == TextureMappingType::Spherical)
+		return sphericalTextureCoordinateWithVertexNormal;
+
+	if (type == TextureMappingType::Cube)
+		return cubeTextureCoordinateWithVertexNormal;
+
+	return std::vector<glm::vec2>();
 }
 
 void Mesh::CreateVertexNormalLines()
@@ -136,9 +184,30 @@ void Mesh::CreateTextureCoordinates()
 
 	for(auto vertexNormal : vertexNormals)
 	{
-		planarTextureCoordinateWithVertexNormal.push_back(GeneratePlanarUV(vertexNormal, minVertex, maxVertex));
-		cylindricalTextureCoordinateWithVertexNormal.push_back(GenerateCylindricalUV(vertexNormal, minVertex, maxVertex));
+		planarTextureCoordinateWithVertexNormal.push_back(GeneratePlanarUV(vertexNormal, minVertexNormal, maxVertexNormal));
+		cylindricalTextureCoordinateWithVertexNormal.push_back(GenerateCylindricalUV(vertexNormal, minVertexNormal, maxVertexNormal));
 		sphericalTextureCoordinateWithVertexNormal.push_back(GenerateSphericalUV(vertexNormal));
 		cubeTextureCoordinateWithVertexNormal.push_back(GenerateCubeUV(vertexNormal));
+	}
+}
+
+void Mesh::CreateMinMax()
+{
+	float minValue = std::numeric_limits<float>::max();
+	float maxValue = std::numeric_limits<float>::min();
+	minVertex = glm::vec3(minValue, minValue, minValue);
+	maxVertex = glm::vec3(maxValue, maxValue, maxValue);
+	for (auto position : positions)
+	{
+		minVertex = GetMin(minVertex, position);
+		maxVertex = GetMax(maxVertex, position);
+	}
+
+	minVertexNormal = glm::vec3(minValue, minValue, minValue);
+	maxVertexNormal = glm::vec3(maxValue, maxValue, maxValue);
+	for (auto vertexNormal : vertexNormals)
+	{
+		minVertexNormal = GetMin(minVertexNormal, vertexNormal);
+		maxVertexNormal = GetMax(maxVertexNormal, vertexNormal);
 	}
 }

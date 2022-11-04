@@ -15,10 +15,10 @@ inline glm::vec2 GenerateCylindricalUV(glm::vec3 vertex, glm::vec3 min, glm::vec
 	float z = vertex.z;
 
 	// atan2 -> return -pi to pi
-	float theta = glm::degrees(atan2(y, x)) + 180.f;
+	float theta = glm::degrees(atan2(z, x)) + 180.f;
 
 	float u = theta / 360.0f;
-	float v = (z - min.z) / (max.z - min.z);
+	float v = (y - min.y) / (max.y - min.y);
 	return glm::vec2(u, v);
 }
 
@@ -30,11 +30,11 @@ inline glm::vec2 GenerateSphericalUV(glm::vec3 vertex)
 
 	float r = sqrt(x * x + y * y + z * z);
 	// atan2 -> return -pi to pi
-	float theta = glm::degrees(atan2(y , x)) + 180.f;
-	float phi = acos(z / r);
+	float theta = glm::degrees(atan2(z , x)) + 180.f;
+	float phi = acos(y / r);
 
 	float u = theta / 360.0f;
-	float v = phi / 180.0f;
+	float v = 1.0f - (phi / 180.0f);
 	return glm::vec2(u, v);
 }
 
@@ -48,33 +48,33 @@ inline glm::vec2 GenerateCubeUV(glm::vec3 vertex)
 	if (absVector.x >= absVector.y && absVector.x >= absVector.z)
 	{
 		if (vertex.x < 0.0f)
-			u = vertex.z;
+			u = vertex.z / absVector.x;
 		else
-			u = -vertex.z;
+			u = -vertex.z / absVector.x;
 
-		v = vertex.y;
+		v = vertex.y / absVector.x;
 	}
 
 	// y coordinate
-	if (absVector.y >= absVector.x && absVector.y >= absVector.z)
+	else if (absVector.y >= absVector.x && absVector.y >= absVector.z)
 	{
 		if (vertex.y < 0.0f)
-			v = vertex.z;
+			v = vertex.z / absVector.y;
 		else
-			v = -vertex.z;
+			v = -vertex.z / absVector.y;
 
-		u = vertex.x;
+		u = vertex.x / absVector.y;
 	}
 
 	// z coordinate 
-	if(absVector.z >= absVector.x && absVector.z >= absVector.y)
+	else if(absVector.z >= absVector.x && absVector.z >= absVector.y)
 	{
 		if (vertex.z < 0.0f)
-			u = -vertex.x;
+			u = -vertex.x / absVector.z;
 		else
-			u = vertex.x;
+			u = vertex.x / absVector.z;
 
-		v = vertex.y;
+		v = vertex.y / absVector.z;
 	}
 
 	glm::vec2 uv{ u,v };

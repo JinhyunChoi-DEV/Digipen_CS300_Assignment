@@ -49,8 +49,10 @@ bool ObjectLoader::Load(const char* fileName, std::string name)
 	float x, y, z = 0;
 	unsigned int firstVertex, secondVertex, thirdVertex;
 
-	glm::vec3 min(0, 0, 0);
-	glm::vec3 max(0, 0, 0);
+	float minValue = std::numeric_limits<float>::max();
+	float maxValue = std::numeric_limits<float>::min();
+	glm::vec3 min(minValue, minValue, minValue);
+	glm::vec3 max(maxValue, maxValue, maxValue);
 	glm::vec3 sumAllVertex(0, 0, 0);
 
 	while (std::getline(file, line))
@@ -99,7 +101,7 @@ bool ObjectLoader::Load(const char* fileName, std::string name)
 	}
 	positions = TranslateToOrigin(sumAllVertex, positions, min, max);
 	positions = ScaleToRange(min, max, positions);
-	vertexNormal.resize(positions.size(), glm::vec3{ 0,0,0 });
+	vertexNormal.resize(positions.size());
 
 	// Make Face and Vertex Normal;
 	std::unordered_map<int, std::vector<glm::vec3>> vnCollections;
@@ -131,7 +133,7 @@ bool ObjectLoader::Load(const char* fileName, std::string name)
 		vertexNormal[index] = normalize(sumNormals);
 	}
 
-	Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, min, max, DrawType::ObjectModel);
+	Mesh* mesh = new Mesh(name, positions, vertexNormal, faceNormal, indices, DrawType::ObjectModel);
 	mesh->SetMultipleFaceIndex(isMultipleIndex);
 	MESHES->Add(name, mesh);
 

@@ -47,6 +47,8 @@ private:
 	void ReloadShaderGUI();
 	void LightingBallGUI();
 	void SetActiveLightBalls(int count);
+	void MaterialGUI();
+	void GlobalLightGUI();
 
 	void SetScenario1(int count, glm::vec3 color);
 	void SetScenario2(std::vector<glm::vec3> colors);
@@ -72,6 +74,7 @@ private:
 	bool drawVertex;
 	bool drawFace;
 	bool pauseRotation;
+	bool visualizeUV;
 	std::string sphereMeshName;
 	std::string orbitLineName;
 	std::string selectedObject;
