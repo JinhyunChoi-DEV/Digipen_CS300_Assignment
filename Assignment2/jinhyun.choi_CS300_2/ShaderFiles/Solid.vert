@@ -6,7 +6,7 @@ Reproduction or disclosure of this file or its contents without the prior writte
 consent of DigiPen Institute of Technology is prohibited.
 File Name: Default.vert
 Purpose: The vertex shader to draw 3D model
-Language: C++
+Language: GLSL
 Platform: Windows 11
 Project: jinhyun.choi_CS300_1
 Author: Jinhyun Choi / jinhyun.choi / 0055642

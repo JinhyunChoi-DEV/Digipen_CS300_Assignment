@@ -1,7 +1,19 @@
+/* Start Header -------------------------------------------------------
+Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the prior written
+consent of DigiPen Institute of Technology is prohibited.
+File Name: UniformBlockObjectManager.cpp
+Purpose: the cpp file of UniformBlockObjectManager for UniformBuffer data and functions
+Language: C++
+Platform: Windows 11
+Project: jinhyun.choi_CS300_2
+Author: Jinhyun Choi / jinhyun.choi / 0055642
+Creation date: 11/04/2022
+End Header --------------------------------------------------------*/
+
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
-#include <iostream>
 
 #include "UniformBlockObjectManager.hpp"
 #include "Graphic.hpp"
@@ -28,30 +40,6 @@ void UniformBlockObjectManager::InitializeTransform()
 
 void UniformBlockObjectManager::InitializeLight()
 {
-	/*auto shader = GRAPHIC->GetShader("PhongShading");
-	GLuint uboIndex;
-	uboIndex = glGetUniformBlockIndex(shader->ProgramID, "TEST");
-
-	GLint uboSize;
-	glGetActiveUniformBlockiv(shader->ProgramID, uboIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &uboSize);
-
-	const GLchar* names[] = {
-		"TEST.type",
-		"TEST.t_position",
-		"TEST.direction",
-		"TEST.ambient",
-		"TEST.diffuse",
-		"TEST.specular",
-		"TEST.innerAngle",
-		"TEST.outerAngle",
-		"TEST.fallOut"
-	};
-
-	GLuint indices[9];
-	GLint offset[9];
-	glGetUniformIndices(shader->ProgramID, 9, names, indices);
-	glGetActiveUniformsiv(shader->ProgramID, 9, indices, GL_UNIFORM_OFFSET, offset);*/
-
 	UniformBufferData data;
 	data.index = lightIndex;
 	// Light.glsl
@@ -89,7 +77,7 @@ void UniformBlockObjectManager::BindTransformData(const Transform* model, const 
 
 void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects, glm::vec3 attenuationConstants, glm::vec3 globalAmbient, glm::vec3 fog, float fogMin, float fogMax)
 {
-	int activeCount = objects.size();
+	int activeCount = (int)objects.size();
 
 	if (uniformBuffers.find(UniformBufferType::Light) == uniformBuffers.end())
 		InitializeLight();

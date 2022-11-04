@@ -6,7 +6,7 @@ File Name: Mesh.cpp
 Purpose: Making a mesh for making object with holding model information like vertices, normals
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_1
+Project: jinhyun.choi_CS300_2
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -21,8 +21,8 @@ End Header --------------------------------------------------------*/
 
 Mesh::Mesh(std::string name, std::vector<glm::vec3> positions, std::vector<glm::vec3> vertexNormal, 
 	std::vector<glm::vec3> faceNormal, std::vector<unsigned int> indices,DrawType type)
-	: name(name), positions(positions), vertexNormals(vertexNormal), faceNormal(faceNormal),
-	indices(indices), objectColor(glm::vec3(0.8, 0.8, 0.8)), type(type)
+	: name(name), positions(positions), vertexNormals(vertexNormal), faceNormal(faceNormal),indices(indices),
+minVertex(0), maxVertex(0), minVertexNormal(0), maxVertexNormal(0),type(type)
 {
 	shader = GRAPHIC->GetShader("PhongShading");
 
@@ -36,7 +36,8 @@ Mesh::Mesh(std::string name, std::vector<glm::vec3> positions, std::vector<glm::
 }
 
 Mesh::Mesh(std::string name, std::vector<glm::vec3> vertices, DrawType type)
-	: name(name), positions(vertices), objectColor(1, 1, 1), type(type)
+	: name(name), positions(vertices), vertexNormals(), faceNormal(), indices(),
+	minVertex(0), maxVertex(0), minVertexNormal(0), maxVertexNormal(0), type(type)
 {
 	shader = GRAPHIC->GetShader("Line");
 }
@@ -64,7 +65,6 @@ Mesh::Mesh(const Mesh* mesh)
 	maxVertex = mesh->GetMaxVertex();
 	minVertexNormal = mesh->GetMinVertexNormal();
 	maxVertexNormal = mesh->GetMaxVertexNormal();
-	objectColor = mesh->GetColor();
 	type = mesh->GetType();
 }
 
@@ -93,11 +93,6 @@ void Mesh::SetShader(std::string name)
 void Mesh::SetMultipleFaceIndex(bool flag)
 {
 	isMultipleFaceIndex = flag;
-}
-
-void Mesh::SetColor(glm::vec3 color)
-{
-	objectColor = color;
 }
 
 void Mesh::SetDrawType(DrawType type)
@@ -193,8 +188,8 @@ void Mesh::CreateTextureCoordinates()
 
 void Mesh::CreateMinMax()
 {
-	float minValue = std::numeric_limits<float>::max();
-	float maxValue = std::numeric_limits<float>::min();
+	constexpr float minValue = std::numeric_limits<float>::max();
+	constexpr float maxValue = std::numeric_limits<float>::min();
 	minVertex = glm::vec3(minValue, minValue, minValue);
 	maxVertex = glm::vec3(maxValue, maxValue, maxValue);
 	for (auto position : positions)

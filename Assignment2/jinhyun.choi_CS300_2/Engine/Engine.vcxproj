@@ -88,20 +88,6 @@
     <ClInclude Include="VertexHelper.hpp" />
     <ClInclude Include="VertexObjectManager.hpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ShaderFiles\BlinnShading.frag" />
-    <None Include="ShaderFiles\BlinnShading.vert" />
-    <None Include="ShaderFiles\Light.glsl" />
-    <None Include="ShaderFiles\Solid.frag" />
-    <None Include="ShaderFiles\Solid.vert" />
-    <None Include="ShaderFiles\Line.frag" />
-    <None Include="ShaderFiles\Line.vert" />
-    <None Include="ShaderFiles\PhongLighting.frag" />
-    <None Include="ShaderFiles\PhongLighting.vert" />
-    <None Include="ShaderFiles\PhongShading.frag" />
-    <None Include="ShaderFiles\PhongShading.vert" />
-    <None Include="ShaderFiles\TransformModel.glsl" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

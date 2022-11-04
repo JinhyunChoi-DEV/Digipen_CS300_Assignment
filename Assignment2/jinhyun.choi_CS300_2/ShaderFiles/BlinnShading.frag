@@ -4,24 +4,26 @@
 Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
 Reproduction or disclosure of this file or its contents without the prior written
 consent of DigiPen Institute of Technology is prohibited.
-File Name: PhongLighting.frag
-Purpose: The fragment shader to draw 3D model of PhongLighting
-Language: C++
+File Name: BlinnShading.frag
+Purpose: the fragment shader for BlinnShading
+Language: GLSL
 Platform: Windows 11
 Project: jinhyun.choi_CS300_2
 Author: Jinhyun Choi / jinhyun.choi / 0055642
-Creation date: 10/24/2022
+Creation date: 11/04/2022
 End Header --------------------------------------------------------*/
 
+in vec3 modelPos;
 in vec3 objectPos;
 in vec3 outputNormal;
-out vec4 outputColor;
+in vec2 outputUVCoord;
 
-uniform vec3 objectColor;
+out vec4 outputColor;
 uniform vec3 cameraPos;
 
 void main()
 {
-	vec3 resultColor = calcuateLight(outputNormal, objectPos, cameraPos, true) * objectColor;
-	outputColor = vec4(resultColor, 1.0);
+	vec2 uv = getTextureCoordinate(modelPos, outputNormal, outputUVCoord);
+	vec3 result = calcuateLight(outputNormal, objectPos, cameraPos, uv, true);
+	outputColor = vec4(result, 1.0);
 }

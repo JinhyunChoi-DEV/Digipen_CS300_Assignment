@@ -4,9 +4,9 @@
 Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
 Reproduction or disclosure of this file or its contents without the prior written
 consent of DigiPen Institute of Technology is prohibited.
-File Name: LightingFunctions.glsl
-Purpose: The vertex shader to draw line
-Language: C++
+File Name: Light.glsl
+Purpose: the glsl code for lighting data and functions
+Language: GLSL
 Platform: Windows 11
 Project: jinhyun.choi_CS300_1
 Author: Jinhyun Choi / jinhyun.choi / 0055642

@@ -18,6 +18,7 @@ End Header --------------------------------------------------------*/
 
 #include "Graphic.hpp"
 
+#include "Application.hpp"
 #include "Light.hpp"
 #include "Mesh.hpp"
 #include "Transform.hpp"
@@ -49,6 +50,10 @@ void Graphic::Initialize()
 
 void Graphic::Update()
 {
+	auto windowSize = APPLICATION->GetWindowSize();
+	if (windowSize.x == 0 || windowSize.y == 0)
+		return;
+
 	glClearColor(fogColor.r, fogColor.g, fogColor.b, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -226,11 +231,10 @@ void Graphic::DrawSolid(Object* object)
 		return;
 
 	auto shader = mesh->GetShader();
-	auto color = mesh->GetColor();
 
 	shader->Use();
 	uboManager->BindTransformData(transform, camera);
-	shader->Set("vertexColor", color);
+	shader->Set("vertexColor", glm::vec3(0.5, 0.5, 0.5));
 
 	glBindVertexArray(VAO);
 
@@ -253,11 +257,10 @@ void Graphic::DrawLine(Object* object)
 		return;
 
 	auto shader = mesh->GetShader();
-	auto color = mesh->GetColor();
 
 	shader->Use();
 	uboManager->BindTransformData(transform, camera);
-	shader->Set("lineColor", color);
+	shader->Set("lineColor", glm::vec3(1,1,1));
 
 	auto vertices = mesh->GetPositions();
 	glBindVertexArray(VAO);

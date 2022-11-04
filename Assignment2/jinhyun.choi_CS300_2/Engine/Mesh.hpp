@@ -6,7 +6,7 @@ File Name: Mesh.hpp
 Purpose: Header of Mesh class
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_1
+Project: jinhyun.choi_CS300_2
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -40,7 +40,6 @@ public:
 	void Delete() override;
 	void SetShader(std::string name);
 	void SetMultipleFaceIndex(bool flag);
-	void SetColor(glm::vec3 color);
 	void SetDrawType(DrawType type);
 
 	Shader* GetShader() const { return shader; }
@@ -53,7 +52,6 @@ public:
 	std::vector<unsigned int> GetIndices() const { return indices; }
 	std::vector<glm::vec3> GetVertexNormalLines() const { return vertexNormalLines; }
 	std::vector<glm::vec3> GetFaceNormalLines() const { return faceNormalLines; }
-	glm::vec3 GetColor() const { return objectColor; }
 	std::vector<glm::vec2> GetTextureCoordinateWithPosition(TextureMappingType type) const;
 	std::vector<glm::vec2> GetTextureCoordinateWithVertexNormal(TextureMappingType type) const;
 	glm::vec3 GetMinVertex() const { return minVertex; }
@@ -91,7 +89,6 @@ private:
 	glm::vec3 maxVertex;
 	glm::vec3 minVertexNormal;
 	glm::vec3 maxVertexNormal;
-	glm::vec3 objectColor;
 
 	DrawType type;
 };

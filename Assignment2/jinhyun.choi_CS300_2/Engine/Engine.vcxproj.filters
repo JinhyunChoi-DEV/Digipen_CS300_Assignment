@@ -16,9 +16,6 @@
     <Filter Include="Engine\Graphics">
       <UniqueIdentifier>{f353ab2c-9a8e-4a3f-8408-744676762c28}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Graphics\GLSL">
-      <UniqueIdentifier>{f0d090f4-c771-4724-a76c-821698ba12e7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Graphics\Shader">
       <UniqueIdentifier>{2f02500d-3462-4170-9faa-1e86d4d5405d}</UniqueIdentifier>
     </Filter>
@@ -263,43 +260,5 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Engine\Graphics\Texture</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ShaderFiles\Solid.frag">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\Solid.vert">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\Line.frag">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\Line.vert">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\PhongLighting.frag">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\PhongLighting.vert">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\PhongShading.frag">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\PhongShading.vert">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\BlinnShading.frag">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\BlinnShading.vert">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\Light.glsl">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
-    <None Include="ShaderFiles\TransformModel.glsl">
-      <Filter>Engine\Graphics\GLSL</Filter>
-    </None>
   </ItemGroup>
 </Project>

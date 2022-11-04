@@ -6,7 +6,7 @@ File Name: Application.cpp
 Purpose: Making of application for opening window, inputs, and many other application level api
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_1
+Project: jinhyun.choi_CS300_2
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -53,6 +53,7 @@ Application::Application()
 		exit(EXIT_FAILURE);
 	}
 
+	glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE);
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwMakeContextCurrent(window);

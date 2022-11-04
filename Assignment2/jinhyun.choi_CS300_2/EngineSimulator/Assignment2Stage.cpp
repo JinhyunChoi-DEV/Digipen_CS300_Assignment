@@ -3,12 +3,12 @@ Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
 Reproduction or disclosure of this file or its contents without the prior written
 consent of DigiPen Institute of Technology is prohibited.
 File Name: Assignment2Stage.cpp
-Purpose: Setup scene for Assignment1 requires
+Purpose: setup scene for Assignment2 requires
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_1
+Project: jinhyun.choi_CS300_2
 Author: Jinhyun Choi / jinhyun.choi / 0055642
-Creation date: 9/29/2022
+Creation date: 11/04/2022
 End Header --------------------------------------------------------*/
 
 #include <GLFW/glfw3.h>
@@ -52,8 +52,8 @@ Assignment2Stage::Assignment2Stage()
 	ppmFileReader->Read("grid.ppm");
 	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
-	//GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
-	//GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", "TransformModel.glsl", nullptr);
 
 	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongShading", "PhongLighting" , "BlinnShading"});
@@ -200,7 +200,6 @@ void Assignment2Stage::CreateObject()
 	auto floor = new Object("FloorObject");
 	floor->AddComponent(new Mesh(MESHES->GetMesh("quad")));
 	floor->AddComponent(new Transform);
-	floor->GetComponent<Mesh>()->SetColor(glm::vec3(0.5, 0.5, 0));
 	OBJECTMANAGER->Add("FloorObject", floor);
 	floorObject = floor;
 	floorObject->GetComponent<Transform>()->SetTranslate(glm::vec3(0, -1.5, 0));
@@ -307,7 +306,7 @@ void Assignment2Stage::ReloadShaderGUI()
 	{
 		if (ImGui::BeginCombo("Shader Lists", selectedShader.c_str()))
 		{
-			for(int i = 0; i < reloadingShaderNames.size(); ++i)
+			for(int i = 0; i < (int)reloadingShaderNames.size(); ++i)
 			{
 				bool isSelected = selectedShader == reloadingShaderNames[i];
 				if(ImGui::Selectable(reloadingShaderNames[i].c_str(), isSelected))
@@ -389,7 +388,7 @@ void Assignment2Stage::LightingBallGUI()
 		ImGui::Text("Light List");
 		if(ImGui::BeginCombo("Selected Light", selectedLight.c_str()))
 		{
-			for(int i =0; i<lights.size(); ++i)
+			for(int i =0; i< (int)lights.size(); ++i)
 			{
 				bool isSelected = selectedLight == lights[i]->GetName();
 				if (ImGui::Selectable(lights[i]->GetName().c_str(), isSelected))
@@ -414,7 +413,7 @@ void Assignment2Stage::LightingBallGUI()
 			if(ImGui::BeginCombo("Type", preview.c_str()))
 			{
 				auto lightTypes = GetLightTypesString();
-				for(int i =0; i<lightTypes.size(); ++i)
+				for(int i =0; i< (int)lightTypes.size(); ++i)
 				{
 					bool isSelected = preview == lightTypes[i];
 					if(ImGui::Selectable(lightTypes[i].c_str(), isSelected))
@@ -483,7 +482,7 @@ void Assignment2Stage::LightingBallGUI()
 void Assignment2Stage::SetActiveLightBalls(int count)
 {
 	activeLightCount = count;
-	for (int i = 0; i < lightBalls.size(); ++i)
+	for (int i = 0; i < (int)lightBalls.size(); ++i)
 	{
 		if (activeLightCount <= i)
 			lightBalls[i]->SetActive(false);
@@ -531,7 +530,7 @@ void Assignment2Stage::MaterialGUI()
 		if(ImGui::BeginCombo("Texture Mode", mappingPreview.c_str()))
 		{
 			auto types = GetTextureMappingTypesString();
-			for(int i =0; i<types.size(); ++i)
+			for(int i =0; i< (int)types.size(); ++i)
 			{
 				bool isSelected = mappingPreview == types[i];
 				if(ImGui::Selectable(types[i].c_str(), isSelected))
@@ -571,7 +570,7 @@ void Assignment2Stage::MaterialGUI()
 		if (ImGui::BeginCombo("Texture Entity", entityPreview.c_str()))
 		{
 			auto types = GetTextureEntityTypesString();
-			for (int i = 0; i < types.size(); ++i)
+			for (int i = 0; i < (int)types.size(); ++i)
 			{
 				bool isSelected = entityPreview == types[i];
 				if (ImGui::Selectable(types[i].c_str(), isSelected))
@@ -630,7 +629,7 @@ void Assignment2Stage::SetScenario1(int count, glm::vec3 color)
 
 void Assignment2Stage::SetScenario2(std::vector<glm::vec3> colors)
 {
-	int count = colors.size();
+	int count = (int)colors.size();
 	SetActiveLightBalls(count);
 
 	auto lights = OBJECTMANAGER->GetLights();

@@ -1,6 +1,17 @@
-#include "Light.hpp"
+/* Start Header -------------------------------------------------------
+Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the prior written
+consent of DigiPen Institute of Technology is prohibited.
+File Name: Light.cpp
+Purpose: the cpp file of light information and functions
+Language: C++
+Platform: Windows 11
+Project: jinhyun.choi_CS300_2
+Author: Jinhyun Choi / jinhyun.choi / 0055642
+Creation date: 11/04/2022
+End Header --------------------------------------------------------*/
 
-#include <iostream>
+#include "Light.hpp"
 
 Light::Light() : direction(0),
                  ambient(1.0f, 1.0f, 1.0f), diffuse(1.0f, 1.0f, 1.0f), specular(1.0f, 1.0f, 1.0f),

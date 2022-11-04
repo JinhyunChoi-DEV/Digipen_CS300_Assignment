@@ -1,3 +1,16 @@
+/* Start Header -------------------------------------------------------
+Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the prior written
+consent of DigiPen Institute of Technology is prohibited.
+File Name: Light.hpp
+Purpose: the header file of light information and functions
+Language: C++
+Platform: Windows 11
+Project: jinhyun.choi_CS300_2
+Author: Jinhyun Choi / jinhyun.choi / 0055642
+Creation date: 11/04/2022
+End Header --------------------------------------------------------*/
+
 #pragma once
 #include <glm/glm.hpp>
 #include "Component.hpp"
@@ -23,11 +36,6 @@ public:
 	void SetType(LightType type);
 	void SetInnerAngle(float innerAngle);
 	void SetOuterAngle(float outerAngle);
-	/*
-	void SetConstant(float constant);
-	void SetLinear(float linear);
-	void SetQuadratic(float quadratic);
-	*/
 	void SetFallOut(float fallOut);
 	void SetColor(glm::vec3 color);
 
@@ -38,9 +46,6 @@ public:
 	LightType GetType() const { return type; }
 	float GetInnerAngle() const { return innerAngle; }
 	float GetOuterAngle() const { return outerAngle; }
-	/*float GetConstant() const { return constant; }
-	float GetLinear() const { return linear; }
-	float GetQuadratic() const { return quadratic; }*/
 	float GetFallOut() const { return fallOut; }
 
 private:
@@ -49,14 +54,7 @@ private:
 	glm::vec3 diffuse;
 	glm::vec3 specular;
 	LightType type;
-
-	// Point && Spotlight 
 	float innerAngle;
 	float outerAngle;
-
-	/*float constant;
-	float linear;
-	float quadratic;*/
-
 	float fallOut;
 };

@@ -6,7 +6,7 @@ File Name: ObjectLoader.cpp
 Purpose: Making Object doing to read obj file and load it to object
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_1
+Project: jinhyun.choi_CS300_2
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -49,8 +49,8 @@ bool ObjectLoader::Load(const char* fileName, std::string name)
 	float x, y, z = 0;
 	unsigned int firstVertex, secondVertex, thirdVertex;
 
-	float minValue = std::numeric_limits<float>::max();
-	float maxValue = std::numeric_limits<float>::min();
+	constexpr float minValue = std::numeric_limits<float>::max();
+	constexpr float maxValue = std::numeric_limits<float>::min();
 	glm::vec3 min(minValue, minValue, minValue);
 	glm::vec3 max(maxValue, maxValue, maxValue);
 	glm::vec3 sumAllVertex(0, 0, 0);

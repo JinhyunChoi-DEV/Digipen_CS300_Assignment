@@ -28,5 +28,5 @@ void main()
 	outputNormal = mat3(transpose(inverse(model))) * normal;
 	diffusePos = vec3(model * vec4(position, 1.0));
 
-	gl_Position = projection * view * model * vec3(position, 1.0);
+	gl_Position = projection * view * model * vec4(position, 1.0);
 }
