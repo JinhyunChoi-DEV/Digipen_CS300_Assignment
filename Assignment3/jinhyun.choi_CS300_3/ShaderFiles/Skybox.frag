@@ -51,13 +51,7 @@ void main()
 		else
 			uv.y = -objectPos.z/absVector.y;
 
-		uv.x = objectPos.x/absVector.y;
-
-		//for Assignment3 image...
-		if(objectPos.y > 0.0f)
-			uv = -uv;
-		else
-			uv.x = -uv.x;
+		uv.x = -objectPos.x/absVector.y;
 		uv = (uv+vec2(1))/2.0;
  
 		if(objectPos.y > 0)

@@ -12,10 +12,14 @@ Creation date: 11/04/2022
 End Header --------------------------------------------------------*/
 #include "TextureManager.hpp"
 
+#include <stb_image.h>
+
 TextureManager* TEXTURES = nullptr;
 
 TextureManager::TextureManager()
 {
+	stbi_set_flip_vertically_on_load(true);
+
 	if(TEXTURES ==	nullptr)
 		TEXTURES = this;
 }
