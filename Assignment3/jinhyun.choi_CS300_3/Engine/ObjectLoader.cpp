@@ -31,6 +31,9 @@ ObjectLoader::ObjectLoader()
 
 bool ObjectLoader::Load(const char* fileName, std::string name)
 {
+	if (MESHES->GetMesh(name) != nullptr)
+		return true;
+
 	auto path = std::string(objFilePath) + std::string(fileName);
 	std::ifstream file(path);
 	std::stringstream fileStream;

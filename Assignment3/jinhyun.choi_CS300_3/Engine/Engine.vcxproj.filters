@@ -58,6 +58,9 @@
     <Filter Include="Engine\Graphics\Texture\stbi">
       <UniqueIdentifier>{bc40e7f5-7373-4e77-8644-e21496d1b3d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Graphics\EnvironmentMapping">
+      <UniqueIdentifier>{0a25473f-c965-4152-8a3b-7183d05eab52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.hpp">
@@ -174,6 +177,9 @@
     <ClInclude Include="Skybox.hpp">
       <Filter>Engine\Graphics\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="EnvironmentMapping.hpp">
+      <Filter>Engine\Graphics\EnvironmentMapping</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -265,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
       <Filter>Engine\Graphics\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentMapping.cpp">
+      <Filter>Engine\Graphics\EnvironmentMapping</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

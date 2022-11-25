@@ -34,6 +34,8 @@ class Object;
 class UniformBlockObjectManager
 {
 public:
+	UniformBlockObjectManager();
+
 	void InitializeTransform();
 	void InitializeLight();
 
@@ -46,3 +48,5 @@ private:
 	unsigned int lightIndex = 1;
 	unsigned int lightMaxCount = 16;
 };
+
+extern UniformBlockObjectManager* UNIFORMBLOCK_OBJECTS;

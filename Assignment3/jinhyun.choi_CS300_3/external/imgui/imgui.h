@@ -1426,7 +1426,7 @@ enum ImGuiKey_
     // Keyboard Modifiers (explicitly submitted by backend via AddKeyEvent() calls)
     // - This is mirroring the data also written to io.KeyCtrl, io.KeyShift, io.KeyAlt, io.KeySuper, in a format allowing
     //   them to be accessed via standard key API, allowing calls such as IsKeyPressed(), IsKeyReleased(), querying duration etc.
-    // - Code polling every keys (e.g. an interface to detect a key press for input mapping) might want to ignore those
+    // - Code polling every keys (e.g. an interface to detect a key press for input environmentMapping) might want to ignore those
     //   and prefer using the real keys (e.g. ImGuiKey_LeftCtrl, ImGuiKey_RightCtrl instead of ImGuiKey_ModCtrl).
     // - In theory the value of keyboard modifiers should be roughly equivalent to a logical or of the equivalent left/right keys.
     //   In practice: it's complicated; mods are often provided from different sources. Keyboard layout, IME, sticky keys and
@@ -1490,7 +1490,7 @@ enum ImGuiNavInput_
     ImGuiNavInput_TweakFast,     // Faster tweaks                                // e.g. R1 or R2 (PS4), RB or RT (Xbox), R or ZL (Switch)
 
     // [Internal] Don't use directly! This is used internally to differentiate keyboard from gamepad inputs for behaviors that require to differentiate them.
-    // Keyboard behavior that have no corresponding gamepad mapping (e.g. CTRL+TAB) will be directly reading from keyboard keys instead of io.NavInputs[].
+    // Keyboard behavior that have no corresponding gamepad environmentMapping (e.g. CTRL+TAB) will be directly reading from keyboard keys instead of io.NavInputs[].
     ImGuiNavInput_KeyLeft_,      // Move left                                    // = Arrow keys
     ImGuiNavInput_KeyRight_,     // Move right
     ImGuiNavInput_KeyUp_,        // Move up

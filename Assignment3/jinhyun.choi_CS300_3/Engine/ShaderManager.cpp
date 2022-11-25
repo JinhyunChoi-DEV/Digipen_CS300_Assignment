@@ -20,8 +20,11 @@ End Header --------------------------------------------------------*/
 #include "Shader.hpp"
 
 
+ShaderManager* SHADERS = nullptr;
 ShaderManager::ShaderManager()
 {
+	if (SHADERS == nullptr)
+		SHADERS = this;
 }
 
 void ShaderManager::Compile(std::string name, std::vector<const char*> paths)

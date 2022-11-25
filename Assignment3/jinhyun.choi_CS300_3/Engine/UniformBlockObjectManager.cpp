@@ -16,12 +16,18 @@ End Header --------------------------------------------------------*/
 #include <vector>
 
 #include "UniformBlockObjectManager.hpp"
-#include "Graphic.hpp"
 #include "Light.hpp"
 #include "Object.hpp"
 #include "ObjectManager.hpp"
 
 class Mesh;
+
+UniformBlockObjectManager* UNIFORMBLOCK_OBJECTS = nullptr;
+UniformBlockObjectManager::UniformBlockObjectManager()
+{
+	if (UNIFORMBLOCK_OBJECTS == nullptr)
+		UNIFORMBLOCK_OBJECTS = this;
+}
 
 void UniformBlockObjectManager::InitializeTransform()
 {

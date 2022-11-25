@@ -19,11 +19,16 @@ End Header --------------------------------------------------------*/
 #include "VertexObjectManager.hpp"
 #include "Texture.hpp"
 
+enum class DirectSide
+{
+	Top, Bottom, Front, Back, Left, Right
+};
+
 class Mesh;
 class Transform;
 class Object;
 class SkyBox;
-
+class EnvironmentMapping;
 class Graphic : public EngineInterface
 {
 public:
@@ -42,7 +47,7 @@ public:
 	void SetSkyBox(SkyBox* skyBox);
 
 	Shader* GetShader(std::string name) const;
-	Camera* GetCamera() const { return camera; }
+	Camera* GetCamera() const { return baseCamera; }
 	glm::vec3 GetFogColor() const { return fogColor; }
 	glm::vec3 GetGlobalAmbient() const { return globalAmbientColor; }
 	glm::vec3 GetAttenuation() const { return attenuationConstants; }
@@ -52,7 +57,9 @@ public:
 
 private:
 	void UpdateLight();
-	void Draw();
+	void DrawEnvironment(std::vector<Object*>);
+	void DrawByType(Object* object);
+
 	void DrawModel(Object* object);
 	void DrawObject(Object* object);
 	void DrawSolid(Object* object);
@@ -62,16 +69,25 @@ private:
 	void DrawFaceNormal(Object* object);
 	void TextureBind(Mesh* mesh, Texture* texture);
 	void DrawSkybox();
+	void DrawEnvironmentTarget(Object* object);
 
-	Camera* camera;
+	Camera* renderTargetCam;
+	Camera* baseCamera;
+	Camera* environmentFBOCamera;
+
 	ShaderManager* shaderManager;
 	VertexObjectManager* vertexObjectManager;
 	UniformBlockObjectManager* uboManager;
 	SkyBox* skyBox;
-	
-	glm::vec3 fogColor = { 0.0f, 0.0f, 0.0f};
-	glm::vec3 globalAmbientColor = {0, 0, 0.0f};
-	glm::vec3 attenuationConstants = {1.0f, 0.22f, 0.2f};
+	EnvironmentMapping* environmentMapping;
+
+	std::unordered_map<DirectSide, std::pair<float, float>> sides;
+	float pitchRotate[6] = { 90.0f, 180.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+	float yawRotate[6] = { 0.0f, 0.0f, 0.0f, 180.0f, 90.0f, -90.0f };
+
+	glm::vec3 fogColor = { 0.0f, 0.0f, 0.0f };
+	glm::vec3 globalAmbientColor = { 0, 0, 0.0f };
+	glm::vec3 attenuationConstants = { 1.0f, 0.22f, 0.2f };
 	glm::vec2 windowSize;
 	bool drawVertexNormal, drawFaceNormal;
 	float fogMin = 0.1f;

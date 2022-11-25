@@ -19,6 +19,7 @@ End Header --------------------------------------------------------*/
 #include "Camera.hpp"
 #include "Object.hpp"
 #include "ObjectLoader.hpp"
+#include "Skybox.hpp"
 #include "TextureManager.hpp"
 #include "StageBase.hpp"
 

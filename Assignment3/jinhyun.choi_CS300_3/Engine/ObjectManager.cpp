@@ -104,6 +104,22 @@ std::vector<Object*> ObjectManager::GetLights() const
 	return result;
 }
 
+std::vector<Object*> ObjectManager::GetEnvironmentObjects() const
+{
+	std::vector<Object*> result;
+
+	for (auto object : objects)
+	{
+		if (!object.second->IsActive())
+			continue;
+
+		if (!object.second->isEnvironmentMappingTarget)
+			result.push_back(object.second);
+	}
+
+	return result;
+}
+
 bool ObjectManager::IsExist(std::string name)
 {
 	return objects.count(name) > 0;

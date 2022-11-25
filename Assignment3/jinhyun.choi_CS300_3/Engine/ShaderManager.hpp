@@ -39,3 +39,4 @@ private:
 	std::unordered_map<std::string, Shader*> shaders;
 
 };
+extern ShaderManager* SHADERS;

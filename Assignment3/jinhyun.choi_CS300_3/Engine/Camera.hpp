@@ -3,7 +3,7 @@ Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
 Reproduction or disclosure of this file or its contents without the prior written
 consent of DigiPen Institute of Technology is prohibited.
 File Name: Camera.hpp
-Purpose: Header of camera class
+Purpose: Header of baseCamera class
 Language: C++
 Platform: Windows 11
 Project: jinhyun.choi_CS300_2
@@ -12,9 +12,7 @@ Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
 
 #pragma once
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 #include "Component.hpp"
 
 enum class CameraMoveAxis
@@ -62,6 +60,7 @@ public:
 	void SetYaw(float degree);
 	void SetRoll(float degree);
 	void ResetPosition();
+	void SetRatio(float value);
 
 private:
 	glm::vec3 position;
@@ -74,5 +73,5 @@ private:
 	glm::vec3 originRight;
 	glm::vec3 originBack;
 
-	float width, height, near, far, fov;
+	float width, height, near, far, fov, ratio;
 };

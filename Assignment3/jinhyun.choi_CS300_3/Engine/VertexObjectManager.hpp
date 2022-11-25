@@ -18,6 +18,8 @@ End Header --------------------------------------------------------*/
 class VertexObjectManager
 {
 public:
+	VertexObjectManager();
+
 	unsigned int GetObjectVAO(const Mesh* mesh);
 	unsigned int GetVertexNormalVAO(const Mesh* mesh);
 	unsigned int GetFaceNormalVAO(const Mesh* mesh);
@@ -33,3 +35,4 @@ private:
 	std::unordered_map<std::string, unsigned int> vertexBuffers;
 	std::unordered_map<std::string, unsigned int> elementBuffers;
 };
+extern VertexObjectManager* VERTEX_OBJECTS;

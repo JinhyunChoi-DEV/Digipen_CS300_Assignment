@@ -21,13 +21,14 @@ Camera::Camera()
 {
 	width = 800.0f;
 	height = 600.0f;
-	position = glm::vec3{ 0,0,0};
+	position = glm::vec3{ 0,0,0 };
 	near = 0.1f;
 	far = 100.0f;
 	fov = glm::radians(45.0f);
+	ratio = width / height;
 
 	back = glm::vec3(0, 0, 1);
-	right = cross(-back, glm::vec3{0,1,0});
+	right = cross(-back, glm::vec3{ 0,1,0 });
 	up = cross(back, right);
 
 	originUp = up;
@@ -44,6 +45,7 @@ Camera::Camera(glm::vec3 eye, glm::vec3 look)
 	near = 0.1f;
 	far = 100.0f;
 	fov = glm::radians(45.0f);
+	ratio = width / height;
 
 	back = -look;
 	right = cross(-back, glm::vec3{ 0,1,0 });
@@ -60,6 +62,7 @@ void Camera::Initialize()
 	const auto windowSize = APPLICATION->GetWindowSize();
 	width = windowSize.x;
 	height = windowSize.y;
+	ratio = width / height;
 }
 
 void Camera::Update()
@@ -70,7 +73,6 @@ void Camera::Delete()
 {
 }
 
-
 glm::mat4 Camera::GetView() const
 {
 	auto look = -back;
@@ -79,7 +81,6 @@ glm::mat4 Camera::GetView() const
 
 glm::mat4 Camera::GetProjection() const
 {
-	auto ratio = width / height;
 	return glm::perspective(fov, ratio, near, far);
 }
 
@@ -118,7 +119,7 @@ void Camera::SetOriginData(CameraOriginData data)
 
 void Camera::SetFOV(const float fov)
 {
-	this->fov = fov;
+	this->fov = glm::radians(fov);
 }
 
 void Camera::SetNear(const float near)
@@ -140,13 +141,14 @@ void Camera::SetViewSize(glm::vec2 windowSize)
 {
 	width = windowSize.x;
 	height = windowSize.y;
+	ratio = width / height;
 }
 
 void Camera::Move(float speed, CameraMoveAxis axis)
 {
-	if(axis == CameraMoveAxis::Front)
+	if (axis == CameraMoveAxis::Front)
 		position = position - (back * speed);
-	if(axis == CameraMoveAxis::Back)
+	if (axis == CameraMoveAxis::Back)
 		position = position + (back * speed);
 	if (axis == CameraMoveAxis::Right)
 		position = position + (right * speed);
@@ -161,8 +163,8 @@ void Camera::SetPitch(float degree)
 	glm::vec4 tempBack = rotationMatrix * glm::vec4(back, 1);
 	glm::vec4 tempUp = rotationMatrix * glm::vec4(up, 1);
 
-	back = {tempBack.x, tempBack.y, tempBack.z};
-	up = {tempUp.x, tempUp.y, tempUp.z};
+	back = { tempBack.x, tempBack.y, tempBack.z };
+	up = { tempUp.x, tempUp.y, tempUp.z };
 }
 
 void Camera::SetYaw(float degree)
@@ -171,7 +173,7 @@ void Camera::SetYaw(float degree)
 	glm::vec4 tempRight = rotationMatrix * glm::vec4(right, 1);
 	glm::vec4 tempBack = rotationMatrix * glm::vec4(back, 1);
 
-	right= { tempRight.x, tempRight.y, tempRight.z };
+	right = { tempRight.x, tempRight.y, tempRight.z };
 	back = { tempBack.x, tempBack.y, tempBack.z };
 }
 
@@ -191,5 +193,10 @@ void Camera::ResetPosition()
 	up = originUp;
 	back = originBack;
 	right = originRight;
+}
+
+void Camera::SetRatio(float value)
+{
+	ratio = value;
 }
 

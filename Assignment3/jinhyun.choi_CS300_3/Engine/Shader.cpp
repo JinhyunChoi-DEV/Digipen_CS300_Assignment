@@ -30,7 +30,7 @@ Shader::Shader(std::string name, std::vector<std::pair<ShaderType, std::string>>
 	std::string fragmentCode;
 	std::vector<std::string> commonCode;
 
-	for(auto shaderInfo : shaderInfos)
+	for (auto shaderInfo : shaderInfos)
 	{
 		auto type = shaderInfo.first;
 
@@ -40,7 +40,7 @@ Shader::Shader(std::string name, std::vector<std::pair<ShaderType, std::string>>
 		if (type == Fragment)
 			fragmentCode = shaderInfo.second;
 
-		if(type == GLSLCommon)
+		if (type == GLSLCommon)
 			commonCode.push_back(shaderInfo.second);
 	}
 
@@ -58,7 +58,7 @@ void Shader::Set(const std::string& name, bool value) const
 {
 	const GLint location = glGetUniformLocation(ProgramID, name.c_str());
 
-	if(location < 0)
+	if (location < 0)
 	{
 		std::cout << "Error-Shader: Fail To Get UniformLocation => " << name << std::endl;
 		return;
@@ -159,20 +159,25 @@ namespace
 		int commonCodeCount = (int)commonCode.size();
 		int totalSize = commonCodeCount + 2;
 
-		char** codes = new char*[totalSize];
+		char** codes = new char* [totalSize];
 		codes[0] = StringCastToChar(versionCode);
 		for (int i = 0; i < (int)commonCode.size(); ++i)
 		{
 			char* currentCode = StringCastToChar(commonCode[i]);
 			codes[i + 1] = currentCode;
 		}
-		codes[totalSize-1] = StringCastToChar(shaderBaseCode);
+		codes[totalSize - 1] = StringCastToChar(shaderBaseCode);
 
 		shader = glCreateShader(shaderType);
 
 		glShaderSource(shader, totalSize, codes, nullptr);
 
 		glCompileShader(shader);
+
+		for (int i = 0; i < totalSize; ++i)
+		{
+			std::cout << codes[i] << std::endl;
+		}
 
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_result);
 
@@ -230,7 +235,7 @@ namespace
 		int size = (int)(strlen(textData) + 1);
 		char* result = new char[size];
 		strcpy_s(result, size, textData);
-		
+
 		return result;
 	}
 }

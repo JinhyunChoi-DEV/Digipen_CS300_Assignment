@@ -34,6 +34,7 @@ public:
 	template <typename  COMPONENT>
 	COMPONENT* GetComponent();
 
+	bool isEnvironmentMappingTarget = false;
 private:
 	std::string name;
 	bool isActive = true;

@@ -24,18 +24,27 @@ End Header --------------------------------------------------------*/
 #include "ObjectManager.hpp"
 #include "Shader.hpp"
 #include "Skybox.hpp"
+#include "EnvironmentMapping.hpp"
 
 Graphic* GRAPHIC;
 
 Graphic::Graphic()
 {
 	GRAPHIC = this;
-	camera = new Camera();
+	baseCamera = new Camera();
 	shaderManager = new ShaderManager();
 	vertexObjectManager = new VertexObjectManager();
 	uboManager = new UniformBlockObjectManager();
 	drawVertexNormal = false;
 	drawFaceNormal = false;
+
+	//pitch, yaw
+	sides[DirectSide::Top] = std::make_pair(90.0f, 0.0f);
+	sides[DirectSide::Bottom] = std::make_pair(-90.0f, 0.0f);
+	sides[DirectSide::Front] = std::make_pair(0.0f, 0.0f);
+	sides[DirectSide::Back] = std::make_pair(0.0f, 180.0f);
+	sides[DirectSide::Left] = std::make_pair(0.0f, 90.0f);
+	sides[DirectSide::Right] = std::make_pair(0.0f, -90.0f);
 }
 
 void Graphic::Initialize()
@@ -44,19 +53,28 @@ void Graphic::Initialize()
 
 	uboManager->InitializeTransform();
 	uboManager->InitializeLight();
+	environmentMapping = new EnvironmentMapping(windowSize);
+	environmentFBOCamera = new Camera();
+	environmentFBOCamera->SetRatio(1);
+	environmentFBOCamera->SetFOV(90.0f);
 }
 
 void Graphic::Update()
 {
-	if (windowSize.x == 0 || windowSize.y == 0)
+	if (windowSize.x <= 0 || windowSize.y <= 0)
 		return;
 
-	glClearColor(fogColor.r, fogColor.g, fogColor.b, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	camera->Update();
 	UpdateLight();
-	Draw();
+
+	auto environmentObjects = OBJECTMANAGER->GetEnvironmentObjects();
+	renderTargetCam = environmentFBOCamera;
+	DrawEnvironment(environmentObjects);
+
+	auto objects = OBJECTMANAGER->GetObjects();
+	renderTargetCam = baseCamera;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	for (const auto& object : objects)
+		DrawByType(object.second);
 
 	glFinish();
 }
@@ -68,12 +86,12 @@ void Graphic::SetViewSize(glm::vec2 windowSize)
 {
 	this->windowSize = windowSize;
 	glViewport(0, 0, static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
-	camera->SetViewSize(windowSize);
+	baseCamera->SetViewSize(windowSize);
 }
 
 void Graphic::SetCamera(Camera* camera)
 {
-	this->camera = camera;
+	this->baseCamera = camera;
 }
 
 void Graphic::CompileShader(std::string name, const char* path, ...)
@@ -82,7 +100,7 @@ void Graphic::CompileShader(std::string name, const char* path, ...)
 	va_list argList;
 	va_start(argList, path);
 
-	while (path != nullptr )
+	while (path != nullptr)
 	{
 		shaderPaths.push_back(path);
 		path = va_arg(argList, const char*);
@@ -130,63 +148,65 @@ void Graphic::UpdateLight()
 	const auto objects = OBJECTMANAGER->GetLights();
 	if (objects.empty())
 		return;
-	
+
 	uboManager->BindLightData(objects, attenuationConstants, globalAmbientColor, fogColor, fogMin, fogMax);
 }
 
-void Graphic::Draw()
+void Graphic::DrawEnvironment(std::vector<Object*> objects)
 {
-	const auto objects = OBJECTMANAGER->GetObjects();
-	if (objects.empty())
+	for (auto side : sides)
+	{
+		environmentMapping->Bind((int)side.first);
+		environmentFBOCamera->ResetPosition();
+		environmentFBOCamera->SetPitch(side.second.first);
+		environmentFBOCamera->SetYaw(side.second.second);
+
+		for (auto& object : objects)
+			DrawByType(object);
+
+		environmentMapping->UnBind();
+	}
+}
+
+void Graphic::DrawByType(Object* object)
+{
+	auto mesh = object->GetComponent<Mesh>();
+	if (!object->IsActive())
 		return;
 
-	for (auto pair : objects)
+	if (mesh == nullptr)
+		return;
+
+	DrawType type = mesh->GetType();
+
+	if (type == DrawType::ObjectModel)
+		DrawModel(object);
+
+	if (type == DrawType::Solid)
+		DrawSolid(object);
+
+	if (type == DrawType::Line)
+		DrawLine(object);
+
+	if (type == DrawType::Light)
 	{
-		auto object = pair.second;
+		auto lightData = object->GetComponent<Light>();
+		if (lightData == nullptr)
+			return;
 
-		if(!object->IsActive())
-			continue;
-
-		auto meshData = object->GetComponent<Mesh>();
-		auto transformData = object->GetComponent<Transform>();
-
-		if(meshData == nullptr)
-			continue;
-
-		if (transformData == nullptr)
-		{
-			transformData = new Transform();
-			object->AddComponent(transformData);
-		}
-
-		DrawType type = meshData->GetType();
-
-		if (type == DrawType::ObjectModel)
-			DrawModel(object);
-
-		if (type == DrawType::Solid)
-			DrawSolid(object);
-
-		if (type == DrawType::Line)
-			DrawLine(object);
-
-		if (type == DrawType::Light)
-		{
-			auto lightData = object->GetComponent<Light>();
-			if(lightData == nullptr)
-				continue;
-
-			DrawLight(object);
-		}
-
-		if (type == DrawType::Skybox)
-			DrawSkybox();
+		DrawLight(object);
 	}
+
+	if (type == DrawType::Skybox)
+		DrawSkybox();
 }
 
 void Graphic::DrawModel(Object* object)
 {
-	DrawObject(object);
+	if (object->isEnvironmentMappingTarget)
+		DrawEnvironmentTarget(object);
+	else
+		DrawObject(object);
 
 	if (drawVertexNormal)
 		DrawVertexNormal(object);
@@ -209,16 +229,16 @@ void Graphic::DrawObject(Object* object)
 	auto shader = mesh->GetShader();
 
 	shader->Use();
-	uboManager->BindTransformData(transform, camera->GetView(), camera->GetProjection());
+	uboManager->BindTransformData(transform, renderTargetCam->GetView(), renderTargetCam->GetProjection());
 	TextureBind(mesh, texture);
 	if (texture != nullptr)
 		texture->Bind(mesh);
 
-	shader->Set("cameraPos", camera->GetPosition());
+	shader->Set("cameraPos", baseCamera->GetPosition());
 
 	glBindVertexArray(VAO);
 
-	if(mesh->GetIsMultipleFaceIndex())
+	if (mesh->GetIsMultipleFaceIndex())
 		glDrawElements(GL_TRIANGLE_FAN, static_cast<int>(mesh->GetIndices().size()), GL_UNSIGNED_INT, nullptr);
 	else
 		glDrawElements(GL_TRIANGLES, static_cast<int>(mesh->GetIndices().size()), GL_UNSIGNED_INT, nullptr);
@@ -237,9 +257,8 @@ void Graphic::DrawSolid(Object* object)
 		return;
 
 	auto shader = mesh->GetShader();
-
 	shader->Use();
-	uboManager->BindTransformData(transform, camera->GetView(), camera->GetProjection());
+	uboManager->BindTransformData(transform, renderTargetCam->GetView(), renderTargetCam->GetProjection());
 	shader->Set("vertexColor", glm::vec3(0.5, 0.5, 0.5));
 
 	glBindVertexArray(VAO);
@@ -263,10 +282,9 @@ void Graphic::DrawLine(Object* object)
 		return;
 
 	auto shader = mesh->GetShader();
-
 	shader->Use();
-	uboManager->BindTransformData(transform, camera->GetView(), camera->GetProjection());
-	shader->Set("lineColor", glm::vec3(1,1,1));
+	uboManager->BindTransformData(transform, renderTargetCam->GetView(), renderTargetCam->GetProjection());
+	shader->Set("lineColor", glm::vec3(1, 1, 1));
 
 	auto vertices = mesh->GetPositions();
 	glBindVertexArray(VAO);
@@ -289,9 +307,8 @@ void Graphic::DrawLight(Object* object)
 
 	auto shader = mesh->GetShader();
 	auto color = light->GetDiffuseIntensity();
-
 	shader->Use();
-	uboManager->BindTransformData(transform, camera->GetView(), camera->GetProjection());
+	uboManager->BindTransformData(transform, renderTargetCam->GetView(), renderTargetCam->GetProjection());
 	shader->Set("vertexColor", color);
 
 	glBindVertexArray(VAO);
@@ -317,7 +334,7 @@ void Graphic::DrawVertexNormal(Object* object)
 	auto shader = GetShader("Line");
 
 	shader->Use();
-	uboManager->BindTransformData(transform, camera->GetView(), camera->GetProjection());
+	uboManager->BindTransformData(transform, baseCamera->GetView(), baseCamera->GetProjection());
 	shader->Set("lineColor", glm::vec3(0, 0, 1));
 
 	auto normalLines = mesh->GetVertexNormalLines();
@@ -341,7 +358,7 @@ void Graphic::DrawFaceNormal(Object* object)
 	auto shader = GetShader("Line");
 
 	shader->Use();
-	uboManager->BindTransformData(transform, camera->GetView(), camera->GetProjection());
+	uboManager->BindTransformData(transform, baseCamera->GetView(), baseCamera->GetProjection());
 	shader->Set("lineColor", glm::vec3(0, 1, 0));
 
 	auto normalLines = mesh->GetFaceNormalLines();
@@ -389,6 +406,9 @@ void Graphic::TextureBind(Mesh* mesh, Texture* texture)
 
 void Graphic::DrawSkybox()
 {
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
+
 	auto object = OBJECTMANAGER->GetObject("Skybox");
 	auto mesh = object->GetComponent<Mesh>();
 	auto transform = object->GetComponent<Transform>();
@@ -397,10 +417,34 @@ void Graphic::DrawSkybox()
 
 	shader->Use();
 	skyBox->Draw();
+	auto view = glm::mat4(glm::mat3(renderTargetCam->GetView()));
+	uboManager->BindTransformData(transform, view, renderTargetCam->GetProjection());
 
-	auto view = glm::mat4(glm::mat3(camera->GetView()));
-	uboManager->BindTransformData(transform, view, camera->GetProjection());
+	glBindVertexArray(VAO);
 
+	if (mesh->GetIsMultipleFaceIndex())
+		glDrawElements(GL_TRIANGLE_FAN, static_cast<int>(mesh->GetIndices().size()), GL_UNSIGNED_INT, nullptr);
+	else
+		glDrawElements(GL_TRIANGLES, static_cast<int>(mesh->GetIndices().size()), GL_UNSIGNED_INT, nullptr);
+
+	glBindVertexArray(0);
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+}
+
+void Graphic::DrawEnvironmentTarget(Object* object)
+{
+	auto transform = object->GetComponent<Transform>();
+	auto mesh = object->GetComponent<Mesh>();
+	auto shader = mesh->GetShader();
+
+	shader->Use();
+	auto VAO = vertexObjectManager->GetObjectVAO(mesh);
+	environmentMapping->UpdateMappingTexture(shader);
+	shader->Set("viewPos", renderTargetCam->GetPosition());
+
+	uboManager->BindTransformData(transform, renderTargetCam->GetView(), renderTargetCam->GetProjection());
 	glBindVertexArray(VAO);
 
 	if (mesh->GetIsMultipleFaceIndex())

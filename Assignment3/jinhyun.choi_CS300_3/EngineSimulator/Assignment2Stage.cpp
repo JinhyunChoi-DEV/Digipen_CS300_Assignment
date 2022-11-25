@@ -18,6 +18,8 @@ End Header --------------------------------------------------------*/
 
 #include "Input.hpp"
 #include "Assignment2Stage.hpp"
+
+#include "Application.hpp"
 #include "MeshManager.hpp"
 #include "Object.hpp"
 #include "ObjectManager.hpp"
@@ -46,6 +48,7 @@ Assignment2Stage::Assignment2Stage()
 	visualizeUV = false;
 	pi = glm::pi<float>();
 
+	GRAPHIC->CompileShader("Skybox", "Skybox.vert", "Skybox.frag", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);

@@ -16,6 +16,13 @@ End Header --------------------------------------------------------*/
 #include "MeshManager.hpp"
 #include "Shader.hpp"
 
+VertexObjectManager* VERTEX_OBJECTS = nullptr;
+VertexObjectManager::VertexObjectManager()
+{
+	if (VERTEX_OBJECTS == nullptr)
+		VERTEX_OBJECTS = this;
+}
+
 unsigned VertexObjectManager::GetObjectVAO(const Mesh* mesh)
 {
 	auto name = mesh->GetName();

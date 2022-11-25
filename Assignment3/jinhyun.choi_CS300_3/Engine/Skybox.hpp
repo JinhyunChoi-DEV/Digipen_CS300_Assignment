@@ -11,26 +11,23 @@ class Object;
 class SkyBox
 {
 public:
-	SkyBox(glm::vec2 windowSize);
+	SkyBox();
 
-	void CreateRenderToTexture();
 	void Draw();
-
 private:
 	void CreateImage(int index);
-	void CreateFrameBuffer();
 
-	GLuint frameBuffer = 0;
-	GLuint renderedTexture = 0;
-	GLuint depthRenderBuffer = 0;
 	int const cubeMapCount = 6;
 	std::string meshName = "cube2.obj";
 	Mesh* mesh;
 	Object* obj;
 
-	int width = -1;
-	int height = -1;
 	std::vector<std::string> cubeSideName = { "top", "bottom", "right", "left", "back", "front" };
 	std::unordered_map<std::string, Image> skyBoxTexture;
+
+	// FrameBuffer
+	GLuint frameBuffer = 0;
+	GLuint depthRenderBuffer = 0;
+	std::vector<GLuint> renderedTexture;
 	std::vector<GLenum> drawBuffers;
 };
