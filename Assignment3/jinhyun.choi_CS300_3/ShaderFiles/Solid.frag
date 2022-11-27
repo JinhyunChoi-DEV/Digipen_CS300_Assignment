@@ -8,7 +8,7 @@ File Name: Solid.frag
 Purpose: the fragment shader for basic soild object
 Language: GLSL
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 11/04/2022
 End Header --------------------------------------------------------*/

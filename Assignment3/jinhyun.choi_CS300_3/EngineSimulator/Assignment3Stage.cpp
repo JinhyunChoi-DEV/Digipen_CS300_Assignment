@@ -448,7 +448,7 @@ void Assignment3Stage::MaterialGUI()
 		auto listType = GetVisualizeTypeString();
 		if (ImGui::BeginCombo("Mapping Mode", currentType.c_str()))
 		{
-			for (int i = 0; i < listType.size(); ++i)
+			for (int i = 0; i < (int)listType.size(); ++i)
 			{
 				bool  isSelected = currentType == listType[i];
 				if (ImGui::Selectable(listType[i].c_str(), isSelected))
@@ -468,7 +468,7 @@ void Assignment3Stage::MaterialGUI()
 		ImGui::Text("Environment Mapping Flag Controls");
 		if (ImGui::BeginCombo("Refraction Materials", selectedMaterials.c_str()))
 		{
-			for (int i = 0; i < refractionFactor.size(); ++i)
+			for (int i = 0; i < (int)refractionFactor.size(); ++i)
 			{
 				bool isSelected = selectedMaterials == refractionFactor[i].first;
 				if (ImGui::Selectable(refractionFactor[i].first.c_str(), isSelected))
