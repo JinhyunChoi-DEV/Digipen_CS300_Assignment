@@ -117,7 +117,7 @@ vec3 getMixColor()
 	refractionColor.g = refractColor[1].g;
 	refractionColor.b = refractColor[2].b;
 
-	return mix(refractionColor, refractColor[1], Ratio);
+	return mix(refractionColor, reflectColor, Ratio);
 }
 
 vec3 getRefractVector(in float eta)
