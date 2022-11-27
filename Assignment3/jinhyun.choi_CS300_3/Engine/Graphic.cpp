@@ -11,20 +11,16 @@ Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <imgui/imgui.h>
 #include <iostream>
+#include <cstdarg>
+#include <glad/glad.h>
 
 #include "Graphic.hpp"
-#include "Light.hpp"
-#include "Mesh.hpp"
-#include "Transform.hpp"
 #include "Object.hpp"
 #include "ObjectManager.hpp"
-#include "Shader.hpp"
 #include "Skybox.hpp"
 #include "EnvironmentMapping.hpp"
+#include "Light.hpp"
 
 Graphic* GRAPHIC;
 
@@ -64,6 +60,12 @@ void Graphic::Update()
 	if (windowSize.x <= 0 || windowSize.y <= 0)
 		return;
 
+	baseCamera->SetViewSize(windowSize);
+	environmentFBOCamera->SetViewSize(windowSize, true);
+
+	environmentMapping->width = (int)windowSize.x;
+	environmentMapping->height = (int)windowSize.y;
+
 	UpdateLight();
 
 	auto environmentObjects = OBJECTMANAGER->GetEnvironmentObjects();
@@ -86,7 +88,6 @@ void Graphic::SetViewSize(glm::vec2 windowSize)
 {
 	this->windowSize = windowSize;
 	glViewport(0, 0, static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
-	baseCamera->SetViewSize(windowSize);
 }
 
 void Graphic::SetCamera(Camera* camera)
@@ -154,6 +155,7 @@ void Graphic::UpdateLight()
 
 void Graphic::DrawEnvironment(std::vector<Object*> objects)
 {
+	environmentMapping->CheckRenterToTexture();
 	for (auto side : sides)
 	{
 		environmentMapping->Bind((int)side.first);
@@ -431,6 +433,7 @@ void Graphic::DrawSkybox()
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Graphic::DrawEnvironmentTarget(Object* object)
@@ -438,11 +441,15 @@ void Graphic::DrawEnvironmentTarget(Object* object)
 	auto transform = object->GetComponent<Transform>();
 	auto mesh = object->GetComponent<Mesh>();
 	auto shader = mesh->GetShader();
+	auto texture = object->GetComponent<Texture>();
 
 	shader->Use();
 	auto VAO = vertexObjectManager->GetObjectVAO(mesh);
-	environmentMapping->UpdateMappingTexture(shader);
+	environmentMapping->Update(shader);
 	shader->Set("viewPos", renderTargetCam->GetPosition());
+	TextureBind(mesh, texture);
+	if (texture != nullptr)
+		texture->Bind(mesh);
 
 	uboManager->BindTransformData(transform, renderTargetCam->GetView(), renderTargetCam->GetProjection());
 	glBindVertexArray(VAO);
@@ -453,4 +460,5 @@ void Graphic::DrawEnvironmentTarget(Object* object)
 		glDrawElements(GL_TRIANGLES, static_cast<int>(mesh->GetIndices().size()), GL_UNSIGNED_INT, nullptr);
 
 	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

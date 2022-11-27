@@ -31,6 +31,7 @@ void InputManager::Initialize()
 void InputManager::Update()
 {
 	keyTriggered.reset();
+	mouseButtonTriggered.reset();
 }
 
 void InputManager::Terminate()
@@ -71,6 +72,33 @@ void InputManager::SetMouse(double x, double y)
 	mousePosition.y = (float)y;
 }
 
+void InputManager::SetMouseButton(int key, int action)
+{
+	KeyActionState state = convert(action);
+
+	switch (state)
+	{
+	case KeyActionState::Release:
+		mouseButtonPressed.reset(key);
+		mouseButtonTriggered.reset(key);
+		break;
+
+	case KeyActionState::Press:
+		mouseButtonPressed.set(key);
+		mouseButtonTriggered.set(key);
+		break;
+
+	case KeyActionState::Repeat:
+		mouseButtonPressed.set(key);
+		mouseButtonTriggered.reset(key);
+		break;
+
+	case KeyActionState::None:
+		fprintf(stderr, "KeyActionState Error");
+		break;
+	}
+}
+
 bool InputManager::IsPressed(int key)
 {
 	return keyPressed[key];
@@ -86,10 +114,27 @@ bool InputManager::IsTriggered(int key)
 	return keyTriggered[key];
 }
 
+bool InputManager::IsPressedMouseButton(int key)
+{
+	return mouseButtonPressed[key];
+}
+
+bool InputManager::IsReleasedMouseButton(int key)
+{
+	return !mouseButtonPressed[key];
+}
+
+bool InputManager::IsTriggeredMouseButton(int key)
+{
+	return mouseButtonTriggered[key];
+}
+
 void InputManager::clear()
 {
 	keyPressed.reset();
 	keyTriggered.reset();
+	mouseButtonPressed.reset();
+	mouseButtonTriggered.reset();
 }
 
 KeyActionState InputManager::convert(int key)

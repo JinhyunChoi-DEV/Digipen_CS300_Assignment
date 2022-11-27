@@ -1,16 +1,18 @@
 #include <iostream>
 
 #include "EnvironmentMapping.hpp"
-
-#include "Graphic.hpp"
 #include "MeshManager.hpp"
 #include "ObjectLoader.hpp"
-#include "Shader.hpp"
 #include "TextureManager.hpp"
-#include "UniformBlockObjectManager.hpp"
+#include "Shader.hpp"
+#include "Transform.hpp"
+#include "Camera.hpp"
+#include "Mesh.hpp"
+#include <glad/glad.h>
 
 EnvironmentMapping::EnvironmentMapping(glm::vec2 size)
 {
+	drawBuffers = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 	OBJECT_LOADER->Load("quad.obj", "frameBufferDraw");
 	mesh = MESHES->GetMesh("frameBufferDraw");
 	mesh->SetShader("FrameBuffer");
@@ -23,14 +25,26 @@ EnvironmentMapping::EnvironmentMapping(glm::vec2 size)
 	cam = new Camera();
 	cam->SetFOV(90.0f);
 
+	visualizeType = VisualizeType::BothEnvironment;
+
+	refractiveIndex = 1.0f;
+	fresnelPower = 5.0f;
+	colorMixRatio = 0.9f;
+
 	CreateFrameBuffer();
+}
+
+void EnvironmentMapping::CheckRenterToTexture()
+{
+	if (textureWidth != width || textureHeight != height)
+	{
+		CreateFrameBuffer();
+	}
 }
 
 void EnvironmentMapping::Bind(int index)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
-	glDrawBuffers(2, drawBuffers.data());
-
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderToTexture[index], 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -40,8 +54,13 @@ void EnvironmentMapping::UnBind()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void EnvironmentMapping::UpdateMappingTexture(Shader* shader)
+void EnvironmentMapping::Update(Shader* shader)
 {
+	shader->Set("type", (int)visualizeType);
+	shader->Set("refractiveIndex", refractiveIndex);
+	shader->Set("fresnelPower", fresnelPower);
+	shader->Set("colorMixRatio", colorMixRatio);
+
 	for (int i = 0; i < 6; ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -52,6 +71,14 @@ void EnvironmentMapping::UpdateMappingTexture(Shader* shader)
 
 void EnvironmentMapping::CreateFrameBuffer()
 {
+	if (initialize)
+	{
+		glDeleteFramebuffers(1, &frameBufferObject);
+		glDeleteTextures(6, renderToTexture.data());
+		renderToTexture.clear();
+		glDeleteRenderbuffers(1, &depthRenderBuffer);
+	}
+
 	auto temp = TEXTURES->Get("top");
 
 	glGenFramebuffers(1, &frameBufferObject);
@@ -73,7 +100,6 @@ void EnvironmentMapping::CreateFrameBuffer()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderToTexture[i], 0);
 	}
 
 	glGenRenderbuffers(1, &depthRenderBuffer);
@@ -83,4 +109,6 @@ void EnvironmentMapping::CreateFrameBuffer()
 
 	glDrawBuffers(2, drawBuffers.data());
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	textureWidth = width;
+	textureHeight = height;
 }

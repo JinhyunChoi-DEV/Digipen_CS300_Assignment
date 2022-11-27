@@ -15,16 +15,19 @@ End Header --------------------------------------------------------*/
 
 layout(location=0) in vec3 position;
 layout(location=1) in vec3 normal;
+layout(location=2) in vec2 uvCoordinate;
 
 out vec3 modelPos;
-out vec3 vertexNormal;
 out vec3 objectPos;
+out vec3 vertexNormal;
+out vec2 cpuUV;
 
 void main()
 {
 	modelPos = position;
 	vertexNormal = mat3(transpose(inverse(transform.model))) * normal;
 	objectPos = vec3(transform.model * vec4(position, 1.0));
+	cpuUV = uvCoordinate;
 
 	gl_Position = getPosition(position);
 }

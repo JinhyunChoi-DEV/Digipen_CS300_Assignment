@@ -14,7 +14,6 @@ End Header --------------------------------------------------------*/
 #pragma once
 
 #include <glm/vec3.hpp>
-#include "Mesh.hpp"
 
 class ObjectLoader
 {

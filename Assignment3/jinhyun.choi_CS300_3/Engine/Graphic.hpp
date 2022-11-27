@@ -12,12 +12,13 @@ Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
 
 #pragma once
-#include "Camera.hpp"
+#include <unordered_map>
+#include <glm/glm.hpp>
 #include "EngineInterface.hpp"
+
 #include "ShaderManager.hpp"
 #include "UniformBlockObjectManager.hpp"
 #include "VertexObjectManager.hpp"
-#include "Texture.hpp"
 
 enum class DirectSide
 {
@@ -29,6 +30,10 @@ class Transform;
 class Object;
 class SkyBox;
 class EnvironmentMapping;
+class Camera;
+class Shader;
+class Texture;
+
 class Graphic : public EngineInterface
 {
 public:
@@ -54,6 +59,7 @@ public:
 	glm::vec2 GetWindowSize() const { return windowSize; }
 	float GetFogMin() const { return fogMin; }
 	float GetFogMax() const { return fogMax; }
+	EnvironmentMapping* GetEnvironmentMapping() const { return environmentMapping; }
 
 private:
 	void UpdateLight();

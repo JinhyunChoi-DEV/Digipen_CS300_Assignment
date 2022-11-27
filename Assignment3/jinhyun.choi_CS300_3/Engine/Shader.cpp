@@ -174,11 +174,6 @@ namespace
 
 		glCompileShader(shader);
 
-		for (int i = 0; i < totalSize; ++i)
-		{
-			std::cout << codes[i] << std::endl;
-		}
-
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_result);
 
 		if (compile_result == GL_FALSE)

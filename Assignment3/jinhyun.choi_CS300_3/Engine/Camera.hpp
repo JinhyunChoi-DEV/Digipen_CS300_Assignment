@@ -54,7 +54,7 @@ public:
 	void SetNear(float near);
 	void SetFar(float far);
 	void SetPosition(glm::vec3 position);
-	void SetViewSize(glm::vec2 windowSize);
+	void SetViewSize(glm::vec2 windowSize, bool isConstRatio = false);
 	void Move(float speed, CameraMoveAxis axis);
 	void SetPitch(float degree);
 	void SetYaw(float degree);

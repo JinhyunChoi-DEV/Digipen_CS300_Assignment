@@ -26,28 +26,28 @@ void Texture::Bind(const Mesh* mesh)
 	auto maxVertexNormal = mesh->GetMaxVertexNormal();
 
 	// ambient
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE10);
 	glBindTexture(GL_TEXTURE_2D, ambientTexture);
-	shader->Set("ambientTexture", 0);
+	shader->Set("ambientTexture", 10);
 
 	// specular
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE11);
 	glBindTexture(GL_TEXTURE_2D, specularTexture);
-	shader->Set("specularTexture", 1);
+	shader->Set("specularTexture", 11);
 
 	// diffuse
-	glActiveTexture(GL_TEXTURE2);
+	glActiveTexture(GL_TEXTURE12);
 	glBindTexture(GL_TEXTURE_2D, diffuseTexture);
-	shader->Set("diffuseTexture", 2);
+	shader->Set("diffuseTexture", 12);
 
 	// emissive
-	glActiveTexture(GL_TEXTURE3);
+	glActiveTexture(GL_TEXTURE13);
 	glBindTexture(GL_TEXTURE_2D, emissiveTexture);
-	shader->Set("emissiveTexture", 3);
+	shader->Set("emissiveTexture", 13);
 
 	shader->Set("useAmbientTexture", ambientTexture != -1);
 	shader->Set("useSpecularTexture", specularTexture != -1);
-	shader->Set("useDiffuseTexture", diffuseTexture!= -1);
+	shader->Set("useDiffuseTexture", diffuseTexture != -1);
 	shader->Set("useEmissiveTexture", emissiveTexture != -1);
 
 	unsigned mapping = static_cast<std::underlying_type<TextureMappingType>::type>(mappingType);

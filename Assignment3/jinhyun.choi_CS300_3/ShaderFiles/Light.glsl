@@ -49,6 +49,7 @@ layout(std140, binding = 1) uniform Lights
 } lights;
 
 float constStrenght = 0.5;
+
 vec3 calcuateLight(in vec3 normalVector, in vec3 objectPos, in vec3 viewPos, in vec2 uv, in bool isBlinn);
 vec3 getAmbient(in vec2 uv, in Light light);
 vec3 getDiffuse(in vec2 uv, in vec3 normalVector, in vec3 objectPos, Light light);

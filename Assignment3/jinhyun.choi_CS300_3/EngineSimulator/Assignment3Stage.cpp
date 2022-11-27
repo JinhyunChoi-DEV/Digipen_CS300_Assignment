@@ -1,17 +1,19 @@
 #include <filesystem>
+#include <iostream>
 
 #include "Assignment3Stage.hpp"
-#include "Application.hpp"
-#include "Graphic.hpp"
-#include "imgui.h"
 #include "Input.hpp"
-#include "Light.hpp"
 #include "LightTypeHelper.hpp"
-#include "MeshManager.hpp"
 #include "ObjectLoader.hpp"
 #include "ObjectManager.hpp"
 #include "Object.hpp"
 #include "SphereMesh.hpp"
+#include "Graphic.hpp"
+#include "Skybox.hpp"
+#include "EnvironmentMapping.hpp"
+#include "imgui.h"
+#include "imgui_internal.h"
+#include "MeshManager.hpp"
 
 Assignment3Stage::Assignment3Stage()
 {
@@ -23,8 +25,22 @@ Assignment3Stage::Assignment3Stage()
 	drawFace = false;
 	drawVertex = false;
 
+	refractionFactor =
+	{
+		std::make_pair("Air", 1.0003),
+		std::make_pair("Hydrogen", 1.0001),
+		std::make_pair("Water", 1.333),
+		std::make_pair("Olive Oil", 1.47),
+		std::make_pair("Ice", 1.31),
+		std::make_pair("Quartz", 1.46),
+		std::make_pair("Diamond", 2.42),
+		std::make_pair("Acrylic ", 1.49),
+		std::make_pair("Plexiglas ", 1.49),
+		std::make_pair("Lucite ", 1.49),
+	};
+
 	GRAPHIC->CompileShader("FrameBuffer", "FrameBuffer.vert", "FrameBuffer.frag", "TransformModel.glsl", nullptr);
-	GRAPHIC->CompileShader("EnvironmentMapping", "EnvironmentMapping.vert", "EnvironmentMapping.frag", "TransformModel.glsl", nullptr);
+	GRAPHIC->CompileShader("EnvironmentMapping", "EnvironmentMapping.vert", "EnvironmentMapping.frag", "TransformModel.glsl", "Texture.glsl", "Light.glsl", nullptr);
 	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Skybox", "Skybox.vert", "Skybox.frag", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", "TransformModel.glsl", nullptr);
@@ -34,6 +50,9 @@ void Assignment3Stage::Initialize()
 {
 	skyBox = new SkyBox();
 	GRAPHIC->SetSkyBox(skyBox);
+	materialsIndex = 0;
+	selectedMaterials = refractionFactor[0].first;
+	GRAPHIC->GetEnvironmentMapping()->refractiveIndex = refractionFactor[0].second;
 
 	LoadAllObjects();
 	CreateMainObject();
@@ -41,7 +60,7 @@ void Assignment3Stage::Initialize()
 
 	auto camera = GRAPHIC->GetCamera();
 	CameraOriginData data;
-	data.position = { 0,0,20 };
+	data.position = { 0,2.5f,15 };
 	camera->SetOriginData(data);
 }
 
@@ -108,17 +127,6 @@ void Assignment3Stage::UpdateLightBall(float time)
 	}
 }
 
-void Assignment3Stage::NormalDrawGUI()
-{
-	if (ImGui::CollapsingHeader("DrawNormal"))
-	{
-		ImGui::Checkbox("Draw Vertex Normal", &drawVertex);
-		ImGui::Checkbox("Draw Face Normal", &drawFace);
-
-		GRAPHIC->SetDrawNormal(drawVertex, drawFace);
-	}
-}
-
 void Assignment3Stage::LoadAllObjects()
 {
 	std::string path = OBJECT_LOADER->GetObjFileDir();
@@ -135,12 +143,23 @@ void Assignment3Stage::LoadAllObjects()
 
 void Assignment3Stage::CreateMainObject()
 {
+	auto texture = new Texture();
+	texture->SetMappingType(TextureMappingType::Cube);
+	texture->SetDiffuse("metal_roof_diff_512x512.png");
+	texture->SetAmbientColor({ 0,0,0 });
+	texture->SetDiffuseColor({ 1,1,1 });
+	texture->SetSpecularColor({ 1,1,1 });
+	texture->SetEntityType(TextureEntityType::VertexPosition);
+	texture->SetUseGPU(true);
+
 	auto main = new Object("MainObject");
 	main->AddComponent(new Mesh(MESHES->GetMesh("sphere")));
 	main->AddComponent(new Transform);
+	main->AddComponent(texture);
 	OBJECTMANAGER->Add("MainObject", main);
 	mainObject = main;
 	selectedMesh = "sphere";
+	selectedObject = "sphere";
 	mainObject->isEnvironmentMappingTarget = true;
 	mainObject->GetComponent<Mesh>()->SetShader("EnvironmentMapping");
 	mainObject->GetComponent<Mesh>()->SetDrawType(DrawType::ObjectModel);
@@ -193,12 +212,58 @@ void Assignment3Stage::CreateLightBall()
 
 void Assignment3Stage::UpdateGUI()
 {
+	ModelsGUI();
 	NormalDrawGUI();
 	LightingBallGUI();
+	MaterialGUI();
+	GlobalLightGUI();
+}
+
+void Assignment3Stage::ModelsGUI()
+{
+	if (ImGui::CollapsingHeader("Models"))
+	{
+		auto mesh = mainObject->GetComponent<Mesh>();
+
+		if (ImGui::BeginCombo("Loaded Objects", selectedObject.c_str()))
+		{
+			for (unsigned i = 0; i < loadFiles.size(); ++i)
+			{
+				bool isSelected = selectedObject == loadFiles[i];
+				if (ImGui::Selectable(loadFiles[i].c_str(), isSelected))
+				{
+					mainObject->DeleteComponent(mesh);
+					delete mesh;
+					selectedObject = loadFiles[i];
+					auto mesh = new Mesh(MESHES->GetMesh(selectedObject));
+					mesh->SetShader("EnvironmentMapping");
+					mainObject->AddComponent(mesh);
+				}
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+	}
+}
+
+void Assignment3Stage::NormalDrawGUI()
+{
+	if (ImGui::CollapsingHeader("DrawNormal"))
+	{
+		ImGui::Checkbox("Draw Vertex Normal", &drawVertex);
+		ImGui::Checkbox("Draw Face Normal", &drawFace);
+
+		GRAPHIC->SetDrawNormal(drawVertex, drawFace);
+	}
 }
 
 void Assignment3Stage::LightingBallGUI()
 {
+	ImGui::Begin("Light Controls");
+
 	auto selectedLightObject = OBJECTMANAGER->GetObject(selectedLight);
 	auto lights = OBJECTMANAGER->GetLights();
 	std::sort(lights.begin(), lights.end(), [](Object* a, Object* b)
@@ -215,12 +280,12 @@ void Assignment3Stage::LightingBallGUI()
 		if (ImGui::SliderInt("Count", &activeLightCount, 1, 16))
 			SetActiveLightBalls(activeLightCount);
 
-		ImGui::NewLine();
+		ImGui::SeparatorEx(1);
 		ImGui::Text("Orbit Rotate Action");
 		ImGui::Checkbox("Pause Rotation", &pauseRotation);
 
 		// Scenarios Buttons
-		ImGui::NewLine();
+		ImGui::SeparatorEx(1);
 		ImGui::Text("Lighting Scenarios");
 		if (ImGui::Button("Scenario 1"))
 		{
@@ -340,6 +405,108 @@ void Assignment3Stage::LightingBallGUI()
 
 			ImGui::TreePop();
 		}
+	}
+
+	ImGui::End();
+}
+
+void Assignment3Stage::MaterialGUI()
+{
+	if (ImGui::CollapsingHeader("Material"))
+	{
+		ImGui::Text("Control Color Mix");
+		ImGui::SliderFloat("Color Mix Ratio", &GRAPHIC->GetEnvironmentMapping()->colorMixRatio, 0.0f, 1.0f);
+
+		ImGui::SeparatorEx(1);
+
+		ImGui::Text("Surface Color Tints");
+		auto color = mainObject->GetComponent<Texture>()->GetEmissiveColor();
+		if (ImGui::ColorEdit3("Emissive", &color[0]))
+		{
+			mainObject->GetComponent<Texture>()->SetEmissiveColor(color);
+		}
+
+		ImGui::SeparatorEx(1);
+
+		ImGui::Text("Environment Mapping");
+		auto currentType = GetVisualizeTypeString(GRAPHIC->GetEnvironmentMapping()->visualizeType);
+		auto listType = GetVisualizeTypeString();
+		if (ImGui::BeginCombo("Mapping Mode", currentType.c_str()))
+		{
+			for (int i = 0; i < listType.size(); ++i)
+			{
+				bool  isSelected = currentType == listType[i];
+				if (ImGui::Selectable(listType[i].c_str(), isSelected))
+				{
+					GRAPHIC->GetEnvironmentMapping()->visualizeType = GetVisualizeTypeFromString(listType[i]);
+				}
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+
+		ImGui::SeparatorEx(1);
+
+		ImGui::Text("Environment Mapping Flag Controls");
+		if (ImGui::BeginCombo("Refraction Materials", selectedMaterials.c_str()))
+		{
+			for (int i = 0; i < refractionFactor.size(); ++i)
+			{
+				bool isSelected = selectedMaterials == refractionFactor[i].first;
+				if (ImGui::Selectable(refractionFactor[i].first.c_str(), isSelected))
+				{
+					materialsIndex = i;
+					selectedMaterials = refractionFactor[i].first;
+					GRAPHIC->GetEnvironmentMapping()->refractiveIndex = refractionFactor[i].second;
+				}
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+
+		float current = GRAPHIC->GetEnvironmentMapping()->refractiveIndex;
+		float base = refractionFactor[materialsIndex].second;
+		if (ImGui::SliderFloat("Refraction Index", &current, 1.0f, 100.0f, "%.3f", 1) || INPUT->IsPressedMouseButton(GLFW_MOUSE_BUTTON_LEFT))
+		{
+			GRAPHIC->GetEnvironmentMapping()->refractiveIndex = current;
+		}
+		else
+		{
+			GRAPHIC->GetEnvironmentMapping()->refractiveIndex = base;
+		}
+
+		ImGui::SliderFloat("Fresnel Power", &GRAPHIC->GetEnvironmentMapping()->fresnelPower, 0.1f, 10.0f);
+	}
+}
+
+void Assignment3Stage::GlobalLightGUI()
+{
+	if (ImGui::CollapsingHeader("Global Constant Control"))
+	{
+		auto attenuation = GRAPHIC->GetAttenuation();
+		auto globalAmbient = GRAPHIC->GetGlobalAmbient();
+		auto fog = GRAPHIC->GetFogColor();
+		auto near = GRAPHIC->GetFogMin();
+		auto far = GRAPHIC->GetFogMax();
+
+		ImGui::DragFloat3("Attenuation Constant", &attenuation[0], 0.01f, 0.0f, 2.0f);
+		ImGui::ColorEdit3("Global Ambient", &globalAmbient[0]);
+		ImGui::ColorEdit3("Fog Color", &fog[0]);
+		ImGui::DragFloat("Fog Min", &near, 0.1f, 0.1f, 20.0f);
+		ImGui::DragFloat("Fog Max", &far, 0.1f, 0.1f, 50.0f);
+
+		if (near > far)
+			near = far;
+		if (far < near)
+			far = near;
+
+		GRAPHIC->SetGlobalLightInfo(attenuation, globalAmbient, fog, near, far);
 	}
 }
 

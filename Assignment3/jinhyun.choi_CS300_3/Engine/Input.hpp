@@ -33,18 +33,27 @@ public:
 	void Terminate();
 	void SetKeyboard(int key, int action);
 	void SetMouse(double x, double y);
+	void SetMouseButton(int key, int action);
 
 	bool IsPressed(int key);
 	bool IsReleased(int key);
 	bool IsTriggered(int key);
+
+	bool IsPressedMouseButton(int key);
+	bool IsReleasedMouseButton(int key);
+	bool IsTriggeredMouseButton(int key);
+
 	glm::vec2 GetMousePosition() { return mousePosition; }
 private:
 	void clear();
 	KeyActionState convert(int key);
-	glm::vec2 mousePosition {0,0};
+	glm::vec2 mousePosition{ 0,0 };
 
 	std::bitset<GLFW_KEY_MENU> keyPressed;
 	std::bitset<GLFW_KEY_MENU> keyTriggered;
+
+	std::bitset<GLFW_MOUSE_BUTTON_LAST> mouseButtonPressed;
+	std::bitset<GLFW_MOUSE_BUTTON_LAST> mouseButtonTriggered;
 };
 
 extern InputManager* INPUT;

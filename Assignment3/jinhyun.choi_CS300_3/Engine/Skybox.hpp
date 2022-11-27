@@ -1,8 +1,8 @@
 #pragma once
+
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "Graphic.hpp"
 
 class Image;
 class Mesh;
@@ -26,8 +26,8 @@ private:
 	std::unordered_map<std::string, Image> skyBoxTexture;
 
 	// FrameBuffer
-	GLuint frameBuffer = 0;
-	GLuint depthRenderBuffer = 0;
-	std::vector<GLuint> renderedTexture;
-	std::vector<GLenum> drawBuffers;
+	unsigned frameBuffer = 0;
+	unsigned depthRenderBuffer = 0;
+	std::vector<unsigned> renderedTexture;
+	std::vector<unsigned> drawBuffers;
 };

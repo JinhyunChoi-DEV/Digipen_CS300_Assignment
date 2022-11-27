@@ -23,14 +23,15 @@ void error_callback(int error_code, const char* description);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouse_callback(GLFWwindow* window, double x, double y);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mode);
 
 Application* APPLICATION;
 
 Application::Application()
 {
 	APPLICATION = this;
-	windowSize.x = 1200;
-	windowSize.y = 800;
+	windowSize.x = 1600;
+	windowSize.y = 900;
 
 	glfwSetErrorCallback(error_callback);
 
@@ -58,6 +59,7 @@ Application::Application()
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -129,4 +131,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	APPLICATION->SetWindowSize(width, height);
 	GRAPHIC->SetViewSize(APPLICATION->GetWindowSize());
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mode)
+{
+	INPUT->SetMouseButton(button, action);
 }

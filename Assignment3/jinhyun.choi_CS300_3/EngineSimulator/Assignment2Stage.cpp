@@ -48,14 +48,13 @@ Assignment2Stage::Assignment2Stage()
 	visualizeUV = false;
 	pi = glm::pi<float>();
 
-	GRAPHIC->CompileShader("Skybox", "Skybox.vert", "Skybox.frag", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Solid", "Solid.vert", "Solid.frag", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("PhongShading", "PhongShading.vert", "PhongShading.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("PhongLighting", "PhongLighting.vert", "PhongLighting.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("BlinnShading", "BlinnShading.vert", "BlinnShading.frag", "Texture.glsl", "Light.glsl", "TransformModel.glsl", nullptr);
 	GRAPHIC->CompileShader("Line", "Line.vert", "Line.frag", "TransformModel.glsl", nullptr);
 
-	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongShading", "PhongLighting" , "BlinnShading"});
+	reloadingShaderNames.insert(reloadingShaderNames.begin(), { "PhongShading", "PhongLighting" , "BlinnShading" });
 }
 
 void Assignment2Stage::Initialize()
@@ -80,7 +79,7 @@ void Assignment2Stage::Update()
 
 	UpdateCamera(dt);
 
-	if(!pauseRotation)
+	if (!pauseRotation)
 		UpdateLightBall(dt);
 
 	UpdateGUI();
@@ -95,10 +94,10 @@ void Assignment2Stage::Terminate()
 void Assignment2Stage::LoadAllObjects()
 {
 	std::string path = objectLoader->GetObjFileDir();
-	for(const auto& entry : std::filesystem::directory_iterator(path))
+	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
 		auto filePath = entry.path().filename();
-		auto fileFull= filePath.string();
+		auto fileFull = filePath.string();
 		auto lastIndex = fileFull.find_last_of(".");
 		auto file = fileFull.substr(0, lastIndex);
 		loadFiles.push_back(file);
@@ -159,7 +158,7 @@ void Assignment2Stage::CreateCamera()
 {
 	camera = GRAPHIC->GetCamera();
 	CameraOriginData data;
-	data.position = { 0,5,12};
+	data.position = { 0,5,12 };
 	data.rotate = Pitch;
 	data.degree = -15;
 	camera->SetOriginData(data);
@@ -175,7 +174,7 @@ void Assignment2Stage::CreateOrbit()
 	orbit->AddComponent(meshOrbit);
 	orbit->AddComponent(new Transform());
 	orbit->GetComponent<Transform>()->SetTranslate(glm::vec3{ 0, 0, 0 });
-	orbit->GetComponent<Transform>()->SetScale(glm::vec3{ 5, 5, 5});
+	orbit->GetComponent<Transform>()->SetScale(glm::vec3{ 5, 5, 5 });
 	orbitScale = orbit->GetComponent<Transform>()->GetScale();
 	OBJECTMANAGER->Add("orbit", orbit);
 }
@@ -238,7 +237,7 @@ void Assignment2Stage::CreateLightBall()
 			object->SetActive(false);
 
 		object->AddComponent(new Transform());
-		object->GetComponent<Transform>()->SetTranslate({ x*scale.x, y*scale.y, z* scale.z});
+		object->GetComponent<Transform>()->SetTranslate({ x * scale.x, y * scale.y, z * scale.z });
 		object->GetComponent<Transform>()->SetScale(glm::vec3{ 0.2, 0.2, 0.2 });
 		OBJECTMANAGER->Add(name, object);
 
@@ -247,7 +246,7 @@ void Assignment2Stage::CreateLightBall()
 
 		auto light = object->GetComponent<Light>();
 		light->SetType(LightType::Point);
-		light->SetDirection({1,0,0});
+		light->SetDirection({ 1,0,0 });
 		light->SetInnerAngle(23.0f);
 		light->SetOuterAngle(27.5f);
 		lightBalls.push_back(object);
@@ -266,7 +265,7 @@ void Assignment2Stage::UpdateGUI()
 
 void Assignment2Stage::ModelsGUI()
 {
-	if(ImGui::CollapsingHeader("Models"))
+	if (ImGui::CollapsingHeader("Models"))
 	{
 		auto mesh = mainObject->GetComponent<Mesh>();
 
@@ -309,10 +308,10 @@ void Assignment2Stage::ReloadShaderGUI()
 	{
 		if (ImGui::BeginCombo("Shader Lists", selectedShader.c_str()))
 		{
-			for(int i = 0; i < (int)reloadingShaderNames.size(); ++i)
+			for (int i = 0; i < (int)reloadingShaderNames.size(); ++i)
 			{
 				bool isSelected = selectedShader == reloadingShaderNames[i];
-				if(ImGui::Selectable(reloadingShaderNames[i].c_str(), isSelected))
+				if (ImGui::Selectable(reloadingShaderNames[i].c_str(), isSelected))
 				{
 					selectedShader = reloadingShaderNames[i];
 				}
@@ -324,10 +323,10 @@ void Assignment2Stage::ReloadShaderGUI()
 			ImGui::EndCombo();
 		}
 
-		if(ImGui::Button("Reload Shader"))
+		if (ImGui::Button("Reload Shader"))
 		{
 			std::string currentShader = mainObject->GetComponent<Mesh>()->GetShader()->Name;
-			if(currentShader != selectedShader)
+			if (currentShader != selectedShader)
 			{
 				mainObject->GetComponent<Mesh>()->SetShader(selectedShader);
 				floorObject->GetComponent<Mesh>()->SetShader(selectedShader);
@@ -341,17 +340,17 @@ void Assignment2Stage::LightingBallGUI()
 	auto selectedLightObject = OBJECTMANAGER->GetObject(selectedLight);
 	auto lights = OBJECTMANAGER->GetLights();
 	std::sort(lights.begin(), lights.end(), [](Object* a, Object* b)
-	{
-		if(a->GetName().size() == b->GetName().size())
-			return a->GetName() < b->GetName();
+		{
+			if (a->GetName().size() == b->GetName().size())
+				return a->GetName() < b->GetName();
 
-		return a->GetName().size() < b->GetName().size();
-	});
+			return a->GetName().size() < b->GetName().size();
+		});
 
-	if(ImGui::CollapsingHeader("Light Control"))
+	if (ImGui::CollapsingHeader("Light Control"))
 	{
 		ImGui::Text("Light Object Count");
-		if(ImGui::SliderInt("Count", &activeLightCount, 1, 16))
+		if (ImGui::SliderInt("Count", &activeLightCount, 1, 16))
 			SetActiveLightBalls(activeLightCount);
 
 		ImGui::NewLine();
@@ -361,14 +360,14 @@ void Assignment2Stage::LightingBallGUI()
 		// Scenarios Buttons
 		ImGui::NewLine();
 		ImGui::Text("Lighting Scenarios");
-		if(ImGui::Button("Scenario 1"))
+		if (ImGui::Button("Scenario 1"))
 		{
 			glm::vec3 color = { 1,1,1 };
 			SetScenario1(5, color);
 		}
 		ImGui::SameLine();
 
-		if(ImGui::Button("Scenario 2"))
+		if (ImGui::Button("Scenario 2"))
 		{
 			std::vector<glm::vec3> colors =
 			{
@@ -380,7 +379,7 @@ void Assignment2Stage::LightingBallGUI()
 		}
 		ImGui::SameLine();
 
-		if(ImGui::Button("Scenario 3"))
+		if (ImGui::Button("Scenario 3"))
 		{
 			SetScenario3(11);
 		}
@@ -389,9 +388,9 @@ void Assignment2Stage::LightingBallGUI()
 		// All Light Lists
 		ImGui::NewLine();
 		ImGui::Text("Light List");
-		if(ImGui::BeginCombo("Selected Light", selectedLight.c_str()))
+		if (ImGui::BeginCombo("Selected Light", selectedLight.c_str()))
 		{
-			for(int i =0; i< (int)lights.size(); ++i)
+			for (int i = 0; i < (int)lights.size(); ++i)
 			{
 				bool isSelected = selectedLight == lights[i]->GetName();
 				if (ImGui::Selectable(lights[i]->GetName().c_str(), isSelected))
@@ -408,24 +407,24 @@ void Assignment2Stage::LightingBallGUI()
 		}
 
 		// Each Light Infos
-		if(ImGui::TreeNode("Light Status"))
+		if (ImGui::TreeNode("Light Status"))
 		{
 			auto light = selectedLightObject->GetComponent<Light>();
 			auto type = light->GetType();
 			auto preview = GetLightTypeString(type);
-			if(ImGui::BeginCombo("Type", preview.c_str()))
+			if (ImGui::BeginCombo("Type", preview.c_str()))
 			{
 				auto lightTypes = GetLightTypesString();
-				for(int i =0; i< (int)lightTypes.size(); ++i)
+				for (int i = 0; i < (int)lightTypes.size(); ++i)
 				{
 					bool isSelected = preview == lightTypes[i];
-					if(ImGui::Selectable(lightTypes[i].c_str(), isSelected))
+					if (ImGui::Selectable(lightTypes[i].c_str(), isSelected))
 					{
 						type = GetTypeFromString(lightTypes[i]);
 						light->SetType(type);
 					}
 
-					if(isSelected)
+					if (isSelected)
 						ImGui::SetItemDefaultFocus();
 				}
 
@@ -434,7 +433,7 @@ void Assignment2Stage::LightingBallGUI()
 
 			// Color
 			auto color = light->GetAmientIntensity();
-			if(ImGui::ColorEdit3("Ambient", &color[0]))
+			if (ImGui::ColorEdit3("Ambient", &color[0]))
 			{
 				light->SetAmientIntensity(color);
 			}
@@ -452,13 +451,13 @@ void Assignment2Stage::LightingBallGUI()
 			}
 
 			// Spotlight Data
-			if(type == LightType::Spotlight)
+			if (type == LightType::Spotlight)
 			{
 				auto innerAngle = light->GetInnerAngle();
 				auto outerAngle = light->GetOuterAngle();
 				auto fallout = light->GetFallOut();
 
-				if(ImGui::SliderFloat("Inner Angle", &innerAngle, 0, 90))
+				if (ImGui::SliderFloat("Inner Angle", &innerAngle, 0, 90))
 				{
 					if (innerAngle < outerAngle)
 						light->SetInnerAngle(innerAngle);
@@ -530,13 +529,13 @@ void Assignment2Stage::MaterialGUI()
 		}
 
 		auto mappingPreview = GetTextureMappingTypeString(mappingType);
-		if(ImGui::BeginCombo("Texture Mode", mappingPreview.c_str()))
+		if (ImGui::BeginCombo("Texture Mode", mappingPreview.c_str()))
 		{
 			auto types = GetTextureMappingTypesString();
-			for(int i =0; i< (int)types.size(); ++i)
+			for (int i = 0; i < (int)types.size(); ++i)
 			{
 				bool isSelected = mappingPreview == types[i];
-				if(ImGui::Selectable(types[i].c_str(), isSelected))
+				if (ImGui::Selectable(types[i].c_str(), isSelected))
 				{
 					auto type = GetTextureMappingFromString(types[i]);
 					texture->SetMappingType(type);
@@ -550,9 +549,9 @@ void Assignment2Stage::MaterialGUI()
 			ImGui::EndCombo();
 		}
 
-		if(ImGui::Checkbox("Visualize UV", &visualizeUV))
+		if (ImGui::Checkbox("Visualize UV", &visualizeUV))
 		{
-			if(visualizeUV)
+			if (visualizeUV)
 			{
 				texture->SetDiffuse("grid.png");
 				texture->SetSpecular("grid.png");
@@ -622,7 +621,7 @@ void Assignment2Stage::SetScenario1(int count, glm::vec3 color)
 	SetActiveLightBalls(count);
 
 	auto lights = OBJECTMANAGER->GetLights();
-	for(int i =0; i<count; ++i)
+	for (int i = 0; i < count; ++i)
 	{
 		auto light = lights[i]->GetComponent<Light>();
 		light->SetType(LightType::Point);

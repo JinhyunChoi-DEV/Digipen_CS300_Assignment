@@ -18,6 +18,7 @@ End Header --------------------------------------------------------*/
 #include <algorithm>
 #include <numeric>
 
+#include "GrahpicsHeader.hpp"
 #include "ObjectLoader.hpp"
 #include "MeshManager.hpp"
 #include "VertexHelper.hpp"
@@ -25,7 +26,7 @@ End Header --------------------------------------------------------*/
 ObjectLoader* OBJECT_LOADER = nullptr;
 ObjectLoader::ObjectLoader()
 {
-	if(OBJECT_LOADER == nullptr)
+	if (OBJECT_LOADER == nullptr)
 		OBJECT_LOADER = this;
 }
 

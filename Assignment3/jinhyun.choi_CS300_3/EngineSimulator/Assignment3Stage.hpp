@@ -1,6 +1,11 @@
 #pragma once
-#include "Skybox.hpp"
+
+#include <glm/vec3.hpp>
+
 #include "StageBase.hpp"
+#include "Object.hpp"
+
+class SkyBox;
 
 class Assignment3Stage : public StageBase
 {
@@ -11,21 +16,24 @@ public:
 	void Update();
 	void Terminate();
 
-
 private:
 	void UpdateCamera(float dt);
 	void UpdateLightBall(float time);
-	void NormalDrawGUI();
 	void LoadAllObjects();
 	void CreateMainObject();
 	void CreateLightBall();
+
+	void UpdateGUI();
+	void ModelsGUI();
+	void NormalDrawGUI();
 	void LightingBallGUI();
+	void MaterialGUI();
+	void GlobalLightGUI();
 
 	void SetActiveLightBalls(int count);
 	void SetScenario1(int count, glm::vec3 color);
 	void SetScenario2(std::vector<glm::vec3> colors);
 	void SetScenario3(int count);
-	void UpdateGUI();
 
 	Object* mainObject = nullptr;
 	std::vector<Object*> lightBalls;
@@ -41,5 +49,9 @@ private:
 	std::string sphereMeshName;
 	SkyBox* skyBox;
 	std::string selectedMesh;
+	std::string selectedObject;
+	std::string selectedMaterials;
+	int materialsIndex;
 	std::vector<std::string> loadFiles;
+	std::vector<std::pair<std::string, float>> refractionFactor;
 };

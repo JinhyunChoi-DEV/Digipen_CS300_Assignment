@@ -137,11 +137,13 @@ void Camera::SetPosition(glm::vec3 position)
 	this->position = position;
 }
 
-void Camera::SetViewSize(glm::vec2 windowSize)
+void Camera::SetViewSize(glm::vec2 windowSize, bool isConstRatio)
 {
 	width = windowSize.x;
 	height = windowSize.y;
-	ratio = width / height;
+
+	if (!isConstRatio)
+		ratio = width / height;
 }
 
 void Camera::Move(float speed, CameraMoveAxis axis)

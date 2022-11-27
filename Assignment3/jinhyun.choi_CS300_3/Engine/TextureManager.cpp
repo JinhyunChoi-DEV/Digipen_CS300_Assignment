@@ -20,7 +20,7 @@ TextureManager::TextureManager()
 {
 	stbi_set_flip_vertically_on_load(true);
 
-	if(TEXTURES ==	nullptr)
+	if (TEXTURES == nullptr)
 		TEXTURES = this;
 }
 
@@ -43,5 +43,9 @@ void TextureManager::Read(std::string fileName)
 
 Image TextureManager::Get(std::string file)
 {
+	if (IsExist(file))
+		return textures[file];
+
+	Read(file);
 	return textures[file];
 }
