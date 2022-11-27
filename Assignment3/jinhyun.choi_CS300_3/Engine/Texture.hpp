@@ -6,7 +6,7 @@ File Name: Texture.hpp
 Purpose: the header file for Texture data and functions
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 11/04/2022
 End Header --------------------------------------------------------*/

@@ -6,7 +6,7 @@ File Name: UniformBlockObjectManager.cpp
 Purpose: the cpp file of UniformBlockObjectManager for UniformBuffer data and functions
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 11/04/2022
 End Header --------------------------------------------------------*/
@@ -106,7 +106,7 @@ void UniformBlockObjectManager::BindLightData(std::vector<Object* > objects, glm
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec3), glm::value_ptr(fog));
 	offset += 16;
 
-	for(int i = 0; i<activeCount; ++i)
+	for (int i = 0; i < activeCount; ++i)
 	{
 		auto model = objects[i]->GetComponent<Transform>();
 		auto light = objects[i]->GetComponent<Light>();

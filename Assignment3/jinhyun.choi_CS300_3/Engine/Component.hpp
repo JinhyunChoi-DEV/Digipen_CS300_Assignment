@@ -6,7 +6,7 @@ File Name: Component.hpp
 Purpose: Header to make base of component
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -17,7 +17,7 @@ class Component
 {
 public:
 	virtual ~Component() = default;
-	virtual void Initialize()=0;
-	virtual void Update()=0;
-	virtual void Delete()=0;
+	virtual void Initialize() = 0;
+	virtual void Update() = 0;
+	virtual void Delete() = 0;
 };

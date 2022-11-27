@@ -1,7 +1,22 @@
+/* Start Header -------------------------------------------------------
+Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the prior written
+consent of DigiPen Institute of Technology is prohibited.
+File Name: Assignment3Stage.cpp
+Purpose: the source file for Assignment3Stage data and function
+Language: C++
+Platform: Windows 11
+Project: jinhyun.choi_CS300_3
+Author: Jinhyun Choi / jinhyun.choi / 0055642
+Creation date: 11/27/2022
+End Header --------------------------------------------------------*/
+
 #include <filesystem>
 #include <iostream>
+#include <glm/ext/scalar_constants.hpp>
 
 #include "Assignment3Stage.hpp"
+#include "Camera.hpp"
 #include "Input.hpp"
 #include "LightTypeHelper.hpp"
 #include "ObjectLoader.hpp"
@@ -27,16 +42,16 @@ Assignment3Stage::Assignment3Stage()
 
 	refractionFactor =
 	{
-		std::make_pair("Air", 1.0003),
-		std::make_pair("Hydrogen", 1.0001),
-		std::make_pair("Water", 1.333),
-		std::make_pair("Olive Oil", 1.47),
-		std::make_pair("Ice", 1.31),
-		std::make_pair("Quartz", 1.46),
-		std::make_pair("Diamond", 2.42),
-		std::make_pair("Acrylic ", 1.49),
-		std::make_pair("Plexiglas ", 1.49),
-		std::make_pair("Lucite ", 1.49),
+		std::make_pair("Air", 1.0003f),
+		std::make_pair("Hydrogen", 1.0001f),
+		std::make_pair("Water", 1.333f),
+		std::make_pair("Olive Oil", 1.47f),
+		std::make_pair("Ice", 1.31f),
+		std::make_pair("Quartz", 1.46f),
+		std::make_pair("Diamond", 2.42f),
+		std::make_pair("Acrylic ", 1.49f),
+		std::make_pair("Plexiglas ", 1.49f),
+		std::make_pair("Lucite ", 1.49f),
 	};
 
 	GRAPHIC->CompileShader("FrameBuffer", "FrameBuffer.vert", "FrameBuffer.frag", "TransformModel.glsl", nullptr);

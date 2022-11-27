@@ -6,7 +6,7 @@ File Name: Graphic.hpp
 Purpose: Header of graphic class
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -81,11 +81,11 @@ private:
 	Camera* baseCamera;
 	Camera* environmentFBOCamera;
 
-	ShaderManager* shaderManager;
-	VertexObjectManager* vertexObjectManager;
-	UniformBlockObjectManager* uboManager;
-	SkyBox* skyBox;
-	EnvironmentMapping* environmentMapping;
+	ShaderManager* shaderManager = nullptr;
+	VertexObjectManager* vertexObjectManager = nullptr;
+	UniformBlockObjectManager* uboManager = nullptr;
+	SkyBox* skyBox = nullptr;
+	EnvironmentMapping* environmentMapping = nullptr;
 
 	std::unordered_map<DirectSide, std::pair<float, float>> sides;
 	float pitchRotate[6] = { 90.0f, 180.0f, 0.0f, 0.0f, 0.0f, 0.0f };

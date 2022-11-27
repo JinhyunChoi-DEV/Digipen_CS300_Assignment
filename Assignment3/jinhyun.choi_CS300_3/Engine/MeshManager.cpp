@@ -6,7 +6,7 @@ File Name: MeshManager.cpp
 Purpose: Making mesh manager for controlling all loaded mesh
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -25,7 +25,7 @@ void MeshManager::Initialize()
 
 void MeshManager::Add(std::string name, Mesh* mesh)
 {
-	if(meshes.count(name) > 0)
+	if (meshes.count(name) > 0)
 		return;
 
 	meshes.insert(std::make_pair(name, mesh));

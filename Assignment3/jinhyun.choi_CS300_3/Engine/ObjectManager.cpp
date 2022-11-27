@@ -6,7 +6,7 @@ File Name: ObjectManager.cpp
 Purpose: Making manager of objects for control all objects in current scene.
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -16,6 +16,7 @@ End Header --------------------------------------------------------*/
 #include "ObjectManager.hpp"
 
 #include "Light.hpp"
+#include "Mesh.hpp"
 #include "Object.hpp"
 
 ObjectManager* OBJECTMANAGER;
@@ -32,7 +33,7 @@ void ObjectManager::Initialize()
 
 void ObjectManager::Update()
 {
-	for(auto pair : objects)
+	for (auto pair : objects)
 	{
 		auto object = pair.second;
 		object->Update();
@@ -89,13 +90,13 @@ void ObjectManager::Delete(std::string name)
 std::vector<Object*> ObjectManager::GetLights() const
 {
 	std::vector<Object*> result;
-	for(auto object : objects)
+	for (auto object : objects)
 	{
-		if(!object.second->IsActive())
+		if (!object.second->IsActive())
 			continue;
 
 		auto light = object.second->GetComponent<Light>();
-		if(light == nullptr)
+		if (light == nullptr)
 			continue;
 
 		result.push_back(object.second);
@@ -114,7 +115,38 @@ std::vector<Object*> ObjectManager::GetEnvironmentObjects() const
 			continue;
 
 		if (!object.second->isEnvironmentMappingTarget)
+		{
+			if (object.second->GetComponent<Mesh>() != nullptr && object.second->GetComponent<Mesh>()->GetType() == DrawType::Skybox)
+			{
+				result.insert(result.begin(), object.second);
+			}
+			else
+			{
+				result.push_back(object.second);
+			}
+		}
+	}
+
+	return result;
+}
+
+std::vector<Object*> ObjectManager::GetObjects() const
+{
+	std::vector<Object*> result;
+
+	for (auto object : objects)
+	{
+		if (!object.second->IsActive())
+			continue;
+
+		if (object.second->GetComponent<Mesh>() != nullptr && object.second->GetComponent<Mesh>()->GetType() == DrawType::Skybox)
+		{
+			result.insert(result.begin(), object.second);
+		}
+		else
+		{
 			result.push_back(object.second);
+		}
 	}
 
 	return result;

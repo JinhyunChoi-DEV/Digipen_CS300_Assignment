@@ -6,7 +6,7 @@ File Name: Object.hpp
 Purpose: Header to make Object class
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -17,7 +17,7 @@ End Header --------------------------------------------------------*/
 #include <vector>
 #include "Component.hpp"
 
-class Object 
+class Object
 {
 public:
 	Object(std::string name) : name(name)
@@ -44,7 +44,7 @@ private:
 template <typename COMPONENT>
 COMPONENT* Object::GetComponent()
 {
-	for(auto component : components)
+	for (auto component : components)
 	{
 		if (typeid(COMPONENT) == typeid(*component))
 			return dynamic_cast<COMPONENT*>(component);

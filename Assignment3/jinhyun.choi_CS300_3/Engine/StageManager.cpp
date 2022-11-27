@@ -6,7 +6,7 @@ File Name: StageManager.cpp
 Purpose: Make Manager of stage for control current and totals stages
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/

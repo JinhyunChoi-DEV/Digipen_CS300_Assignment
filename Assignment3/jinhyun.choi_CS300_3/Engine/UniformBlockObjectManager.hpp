@@ -6,14 +6,12 @@ File Name: UniformBlockObjectManager.hpp
 Purpose: the header file of UniformBlockObjectManager for UniformBuffer data and functions
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 11/04/2022
 End Header --------------------------------------------------------*/
 
 #pragma once
-#include <glfw/glfw3.h>
-#include "Camera.hpp"
 #include "Mesh.hpp"
 #include "Shader.hpp"
 #include "Transform.hpp"
@@ -25,9 +23,9 @@ enum class UniformBufferType
 
 struct UniformBufferData
 {
-	GLuint UBO;
-	GLuint index;
-	GLint size;
+	unsigned UBO;
+	unsigned index;
+	int size;
 };
 
 class Object;

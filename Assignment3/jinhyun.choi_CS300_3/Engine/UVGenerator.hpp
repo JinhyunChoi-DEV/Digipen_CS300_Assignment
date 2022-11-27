@@ -6,7 +6,7 @@ File Name: UVGenerator.hpp
 Purpose: the header file for UV generating functions
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 11/04/2022
 End Header --------------------------------------------------------*/
@@ -43,7 +43,7 @@ inline glm::vec2 GenerateSphericalUV(glm::vec3 vertex)
 
 	float r = sqrt(x * x + y * y + z * z);
 	// atan2 -> return -pi to pi
-	float theta = glm::degrees(atan2(z , x)) + 180.f;
+	float theta = glm::degrees(atan2(z, x)) + 180.f;
 	float phi = acos(y / r);
 
 	float u = theta / 360.0f;
@@ -80,7 +80,7 @@ inline glm::vec2 GenerateCubeUV(glm::vec3 vertex)
 	}
 
 	// z coordinate 
-	else if(absVector.z >= absVector.x && absVector.z >= absVector.y)
+	else if (absVector.z >= absVector.x && absVector.z >= absVector.y)
 	{
 		if (vertex.z < 0.0f)
 			u = -vertex.x / absVector.z;

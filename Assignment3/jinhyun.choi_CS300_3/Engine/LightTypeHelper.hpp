@@ -6,7 +6,7 @@ File Name: LightTypeHelper.hpp
 Purpose: the helper function header for converting string data of LightType enum
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 11/04/2022
 End Header --------------------------------------------------------*/
@@ -38,10 +38,10 @@ inline std::vector<std::string> GetLightTypesString() noexcept
 {
 	std::vector<std::string> result;
 	auto count = static_cast<std::underlying_type<LightType>::type>(LightType::Count);
-	for(int i = 0; i < count; ++i)
+	for (int i = 0; i < count; ++i)
 	{
 		auto typeName = GetLightTypeString(static_cast<LightType>(i));
-		if(typeName != "")
+		if (typeName != "")
 			result.push_back(typeName);
 	}
 
@@ -58,6 +58,6 @@ inline LightType GetTypeFromString(std::string typeName)
 
 	if (typeName == "Spotlight")
 		return LightType::Spotlight;
-	
+
 	return LightType::Count;
 }

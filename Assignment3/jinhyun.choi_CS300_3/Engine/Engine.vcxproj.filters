@@ -55,11 +55,11 @@
     <Filter Include="Engine\Graphics\Texture">
       <UniqueIdentifier>{b4b45c0a-d1d9-4ead-b246-f8e11635845f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Graphics\Texture\stbi">
-      <UniqueIdentifier>{bc40e7f5-7373-4e77-8644-e21496d1b3d2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Graphics\EnvironmentMapping">
       <UniqueIdentifier>{0a25473f-c965-4152-8a3b-7183d05eab52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Texture\Image">
+      <UniqueIdentifier>{bc40e7f5-7373-4e77-8644-e21496d1b3d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -166,10 +166,10 @@
       <Filter>Engine\Graphics\Texture</Filter>
     </ClInclude>
     <ClInclude Include="Image.hpp">
-      <Filter>Engine\Graphics\Texture\stbi</Filter>
+      <Filter>Engine\Graphics\Texture\Image</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.hpp">
-      <Filter>Engine\Graphics\Texture\stbi</Filter>
+      <Filter>Engine\Graphics\Texture\Image</Filter>
     </ClInclude>
     <ClInclude Include="TextureTypeHelper.hpp">
       <Filter>Engine\Graphics\Texture</Filter>
@@ -261,10 +261,10 @@
       <Filter>Engine\Light</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
-      <Filter>Engine\Graphics\Texture\stbi</Filter>
+      <Filter>Engine\Graphics\Texture\Image</Filter>
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
-      <Filter>Engine\Graphics\Texture\stbi</Filter>
+      <Filter>Engine\Graphics\Texture\Image</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Engine\Graphics\Texture</Filter>

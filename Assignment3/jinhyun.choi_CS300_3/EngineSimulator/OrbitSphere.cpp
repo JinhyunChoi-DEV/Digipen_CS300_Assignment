@@ -6,7 +6,7 @@ File Name: OrbitSphere.cpp
 Purpose: Making procedurally orbit sphere (lines)
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -27,7 +27,7 @@ OrbitSphere::OrbitSphere(std::string name, float radius, int sector)
 
 	constexpr float pi = glm::pi<float>();
 	float step = 2 * pi / sector;
-	for(int i =0; i <= sector; ++i)
+	for (int i = 0; i <= sector; ++i)
 	{
 		if (i > 1)
 			positions.push_back(currentVertex);

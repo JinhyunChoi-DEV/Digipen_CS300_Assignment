@@ -6,7 +6,7 @@ File Name: ObjectLoader.cpp
 Purpose: Making Object doing to read obj file and load it to object
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -17,9 +17,10 @@ End Header --------------------------------------------------------*/
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <glm/glm.hpp>
 
-#include "GrahpicsHeader.hpp"
 #include "ObjectLoader.hpp"
+#include "Mesh.hpp"
 #include "MeshManager.hpp"
 #include "VertexHelper.hpp"
 

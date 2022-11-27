@@ -1,6 +1,19 @@
+/* Start Header -------------------------------------------------------
+Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the prior written
+consent of DigiPen Institute of Technology is prohibited.
+File Name: Assignment3Stage.hpp
+Purpose: the header file for Assignment3Stage data and function
+Language: C++
+Platform: Windows 11
+Project: jinhyun.choi_CS300_3
+Author: Jinhyun Choi / jinhyun.choi / 0055642
+Creation date: 11/27/2022
+End Header --------------------------------------------------------*/
+
 #pragma once
 
-#include <glm/vec3.hpp>
+#include <glm/glm.hpp>
 
 #include "StageBase.hpp"
 #include "Object.hpp"

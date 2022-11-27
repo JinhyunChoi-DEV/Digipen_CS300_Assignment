@@ -172,14 +172,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Assignment2Stage.cpp" />
     <ClCompile Include="Assignment3Stage.cpp" />
     <ClCompile Include="OrbitSphere.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="SphereMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Assignment2Stage.hpp" />
     <ClInclude Include="Assignment3Stage.hpp" />
     <ClInclude Include="OrbitSphere.hpp" />
     <ClInclude Include="SphereMesh.hpp" />

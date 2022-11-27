@@ -6,7 +6,7 @@ File Name: SphereMesh.cpp
 Purpose: Making procedurally sphere mesh
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -98,12 +98,12 @@ SphereMesh::SphereMesh(std::string name, float radius, int stack, int sector)
 	for (int i = 0; i < (int)indices.size(); i += 3)
 	{
 		unsigned firstFactor = (unsigned)i;
-		unsigned secondFactor = (unsigned)i+1;
-		unsigned thirdFactor = (unsigned)i+2;
+		unsigned secondFactor = (unsigned)i + 1;
+		unsigned thirdFactor = (unsigned)i + 2;
 
 		int firstIndex = (int)indices[firstFactor];
 		int secondIndex = (int)indices[secondFactor];
-		int thirdIndex= (int)indices[thirdFactor];
+		int thirdIndex = (int)indices[thirdFactor];
 
 		auto first = positions[firstIndex];
 		auto second = positions[secondIndex];

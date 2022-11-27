@@ -6,7 +6,7 @@ File Name: Object.cpp
 Purpose: Making object core system and manage components.
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -16,7 +16,7 @@ End Header --------------------------------------------------------*/
 
 void Object::Update()
 {
-	for(auto component : components)
+	for (auto component : components)
 	{
 		component->Update();
 	}
@@ -29,7 +29,7 @@ void Object::AddComponent(Component* component)
 
 void Object::DeleteComponent(Component* component)
 {
-	for(auto it = components.begin(); it != components.end();)
+	for (auto it = components.begin(); it != components.end();)
 	{
 		if (*it == component)
 			it = components.erase(it);

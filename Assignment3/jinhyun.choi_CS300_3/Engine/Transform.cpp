@@ -6,7 +6,7 @@ File Name: Transform.cpp
 Purpose: Making Transform of object for translate, rotate, and scale
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -75,13 +75,13 @@ glm::vec3 Transform::GetAxis(RotateAxis axis)
 	switch (axis)
 	{
 	case X:
-		return glm::vec3{1,0,0};
+		return glm::vec3{ 1,0,0 };
 
 	case Y:
 		return glm::vec3{ 0,1,0 };
 
 	case Z:
-		return glm::vec3{ 0,0,1};
+		return glm::vec3{ 0,0,1 };
 
 	default:
 		return glm::vec3{ 0,0,0 };

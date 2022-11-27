@@ -1,5 +1,18 @@
+/* Start Header -------------------------------------------------------
+Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the prior written
+consent of DigiPen Institute of Technology is prohibited.
+File Name: SkyBox.cpp
+Purpose: the cpp file for SkyBox data and functions
+Language: C++
+Platform: Windows 11
+Project: jinhyun.choi_CS300_3
+Author: Jinhyun Choi / jinhyun.choi / 0055642
+Creation date: 11/27/2022
+End Header --------------------------------------------------------*/
+
 #include <iostream>
-#include <glad/glad.h>\
+#include <glad/glad.h>
 
 #include "Mesh.hpp"
 #include "MeshManager.hpp"

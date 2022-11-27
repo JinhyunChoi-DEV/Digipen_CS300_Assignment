@@ -6,7 +6,7 @@ File Name: Source.cpp
 Purpose: Generate Core Engine and do starting, updating, and terminate application
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 9/29/2022
 End Header --------------------------------------------------------*/
@@ -14,7 +14,6 @@ End Header --------------------------------------------------------*/
 #include <cstdarg>
 #include <iostream>
 
-#include "Assignment2Stage.hpp"
 #include "EngineController.hpp"
 #include "StageManager.hpp"
 #include "Assignment3Stage.hpp"

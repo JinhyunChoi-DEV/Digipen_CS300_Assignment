@@ -6,7 +6,7 @@ File Name: VertexObjectManager.cpp
 Purpose: Making of manager about Vertex Object like VAO, VBO, EBO.
 Language: C++
 Platform: Windows 11
-Project: jinhyun.choi_CS300_2
+Project: jinhyun.choi_CS300_3
 Author: Jinhyun Choi / jinhyun.choi / 0055642
 Creation date: 11/04/2022
 End Header --------------------------------------------------------*/
@@ -81,9 +81,9 @@ void VertexObjectManager::RebindTexture(const Mesh* mesh, const Texture* texture
 	const auto vertexNormals = mesh->GetVertexNormals();
 	const auto indices = mesh->GetIndices();
 	std::vector<glm::vec2> baseTextureCoordinates;
-	if(entityType == TextureEntityType::VertexPosition)
+	if (entityType == TextureEntityType::VertexPosition)
 		baseTextureCoordinates = mesh->GetTextureCoordinateWithPosition(mappingType);
-	else if(entityType == TextureEntityType::VertexNormal)
+	else if (entityType == TextureEntityType::VertexNormal)
 		baseTextureCoordinates = mesh->GetTextureCoordinateWithVertexNormal(mappingType);
 
 	const auto vec2DataSize = sizeof(glm::vec2);
@@ -137,7 +137,7 @@ void VertexObjectManager::GenerateObject(std::string name, const Mesh* mesh)
 	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
-	
+
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, (positionSize * vec3DataSize + vertexNormalSize * vec3DataSize + textureCoordinateSize * vec2DataSize), nullptr, GL_STATIC_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, (vec3DataSize * positionSize), &positions[0]);
